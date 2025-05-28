@@ -252,7 +252,7 @@
             chainId: 109,
             name: 'Shibarium',
             explorerUrl: 'https://shibariumscan.io',
-            rpcUrl: 'https://www.shibrpc.com'
+            rpcUrl: 'https://rpc.shibariumchain.com'
         };
         const maxSupply = BigInt("1000000000000000000000000000000");
 
@@ -288,7 +288,7 @@
                                     chainId: '0x6d',
                                     chainName: 'Shibarium',
                                     nativeCurrency: { name: 'BONE', symbol: 'BONE', decimals: 18 },
-                                    rpcUrls: ['https://www.shibrpc.com'],
+                                    rpcUrls: ['https://rpc.shibariumchain.com'],
                                     blockExplorerUrls: ['https://shibariumscan.io']
                                 }]
                             });
@@ -318,16 +318,16 @@
                 }
                 for (const token of tokens.slice(0, 100)) {
                     const tokenContract = new web3.eth.Contract(memeTokenABI, token);
-                    let name = 'Unknown', symbol = 'Unknown', metadata = ['', '', '', '', ''], canMint = false;
+                    let name = 'Unknown', symbol = 'Unknown', metadata = ['', '', '', '', ''], totalSupply = BigInt(0);
                     try {
                         name = await tokenContract.methods.name().call();
                         symbol = await tokenContract.methods.symbol().call();
                         metadata = await tokenContract.methods.getMetadata().call();
-                        const totalSupply = BigInt(await tokenContract.methods.totalSupply().call());
-                        canMint = totalSupply < maxSupply;
+                        totalSupply = BigInt(await tokenContract.methods.totalSupply().call());
                     } catch (error) {
                         console.warn(`Failed to fetch token ${token}: ${error.message}`);
                     }
+                    const canMint = totalSupply < maxSupply;
                     const card = document.createElement('div');
                     card.className = 'post-card';
                     card.innerHTML = `
@@ -375,16 +375,16 @@
             try {
                 status.innerText = "Searching token...";
                 const tokenContract = new web3.eth.Contract(memeTokenABI, tokenAddress);
-                let name, symbol, metadata, canMint = false;
+                let name, symbol, metadata, totalSupply;
                 try {
                     name = await tokenContract.methods.name().call();
                     symbol = await tokenContract.methods.symbol().call();
                     metadata = await tokenContract.methods.getMetadata().call();
-                    const totalSupply = BigInt(await tokenContract.methods.totalSupply().call());
-                    canMint = totalSupply < maxSupply;
+                    totalSupply = BigInt(await tokenContract.methods.totalSupply().call());
                 } catch (error) {
                     throw new Error("Failed to fetch token details: " + error.message);
                 }
+                const canMint = totalSupply < maxSupply;
                 waterfall.innerHTML = '';
                 const card = document.createElement('div');
                 card.className = 'post-card';
@@ -424,16 +424,17 @@
 
         async function updateMintButtons() {
             const buttons = document.querySelectorAll('.mint-button');
-            buttons.forEach(async button => {
+            for (const button of buttons) {
                 const tokenAddress = button.dataset.address;
                 try {
                     const tokenContract = new web3.eth.Contract(memeTokenABI, tokenAddress);
                     const totalSupply = BigInt(await tokenContract.methods.totalSupply().call());
                     button.disabled = !accounts || totalSupply >= maxSupply;
                 } catch (error) {
-                    button.disabled = true;
+                    console.warn(`Failed to check totalSupply for ${tokenAddress}: ${error.message}`);
+                    button.disabled = !accounts;
                 }
-            });
+            }
         }
 
         async function mintToken(tokenAddress) {
