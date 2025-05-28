@@ -359,7 +359,7 @@
                 console.log('Fetching MemeCoins for creator:', account);
                 console.log('Parameters:', { page, pageSize });
 
-                // 严格按照你的要求调用：getMemeCoinsByCreator(account, 1, 5)
+                // 严格按照要求调用：getMemeCoinsByCreator(account, 1, 5)
                 const result = await memeCoinFactoryContract.methods
                     .getMemeCoinsByCreator(account, page, pageSize)
                     .call();
@@ -456,8 +456,12 @@
                     document.getElementById('connectWalletButton').innerText = `Connected: ${account.slice(0, 6)}...${account.slice(-4)}`;
                     await switchNetwork('Shibarium');
                     await initializeContracts();
-                    document.getElementById('networkStatus').innerText = `Connected to Shibarium`;
-                    await fetchMemeCoins();
+                    document.getElementById('networkStatus').innerText = `Connected to Shibarium, waiting 5 seconds to fetch MemeCoins...`;
+
+                    // 等待 5 秒后查询 Meme 币
+                    setTimeout(async () => {
+                        await fetchMemeCoins();
+                    }, 5000);
 
                     window.ethereum.on('accountsChanged', async (accounts) => {
                         if (accounts.length === 0) {
@@ -465,7 +469,11 @@
                         } else {
                             account = accounts[0];
                             document.getElementById('connectWalletButton').innerText = `Connected: ${account.slice(0, 6)}...${account.slice(-4)}`;
-                            await fetchMemeCoins();
+                            document.getElementById('networkStatus').innerText = `Account changed, waiting 5 seconds to fetch MemeCoins...`;
+                            // 账户切换后也等待 5 秒再查询
+                            setTimeout(async () => {
+                                await fetchMemeCoins();
+                            }, 5000);
                         }
                     });
 
