@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shibedia Usage Guide</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f0f2f7;
+            color: #262626;
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        h1, h2, h3 {
+            color: #262626;
+            margin-bottom: 15px;
+        }
+        h1 { font-size: 2.2em; text-align: center; }
+        h2 { font-size: 1.8em; }
+        h3 { font-size: 1.4em; }
+        p { margin-bottom: 15px; }
+        ul, ol { margin: 10px 0 20px 20px; }
+        li { margin-bottom: 10px; }
+        code { background: #f4f4f4; padding: 2px 6px; border-radius: 4px; }
+        .highlight {
+            color: #ff6b6b;
+            font-weight: 600;
+        }
+        .section {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .footer {
+            text-align: center;
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 30px;
+        }
+        .footer a {
+            color: #ff6b6b;
+            text-decoration: none;
+        }
+        .footer a:hover {
+            text-decoration: underline;
+        }
+        @media (max-width: 600px) {
+            body { padding: 10px; }
+            h1 { font-size: 1.8em; }
+            h2 { font-size: 1.5em; }
+            h3 { font-size: 1.2em; }
+        }
+    </style>
+</head>
+<body>
+    <div class="section">
+        <h1>Shibedia Usage Guide</h1>
+        <p>Welcome to <span class="highlight">Shibedia</span>, a vibrant platform to explore and interact with MemeCoins on the Shibarium blockchain. This guide walks you through how to use the Shibedia page to view, search, and mint MemeCoins, and explains the MemeCoin format displayed on the site.</p>
+    </div>
+
+    <div class="section">
+        <h2>Overview</h2>
+        <p>Shibedia is a web-based interface styled like Instagram, showcasing MemeCoins created via the <code>ShibariumMemeCoin</code> contract (address: <code>0x9491FD7AB3651904F2D5282bFa97f052698ff8b3</code>) on Shibarium (chain ID: 109). It features a waterfall (masonry) layout of up to 100 recent MemeCoins, a search function for specific tokens, and a minting feature for users with a connected wallet.</p>
+        <ul>
+            <li><strong>View MemeCoins</strong>: Browse the latest 100 MemeCoins without a wallet.</li>
+            <li><strong>Search Tokens</strong>: Find a specific MemeCoin by its contract address.</li>
+            <li><strong>Mint Tokens</strong>: Mint new tokens from a MemeCoin contract after connecting a wallet.</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>Getting Started</h2>
+        <h3>Requirements</h3>
+        <ul>
+            <li><strong>Web Browser</strong>: Chrome, Firefox, or any modern browser.</li>
+            <li><strong>Local Server</strong>: Run the page via a local server (e.g., <code>npx serve</code>) to enable Web3 functionality.</li>
+            <li><strong>MetaMask (Optional)</strong>: Install the MetaMask extension for minting. Not required for viewing or searching.</li>
+            <li><strong>BONE Tokens</strong>: Shibarium’s native token for gas fees, needed for minting.</li>
+        </ul>
+
+        <h3>Accessing Shibedia</h3>
+        <ol>
+            <li>Save the Shibedia HTML file locally.</li>
+            <li>Open a terminal, navigate to the file’s directory, and run <code>npx serve</code> (requires Node.js).</li>
+            <li>Open the provided URL (e.g., <code>http://localhost:3000</code>) in your browser.</li>
+        </ol>
+        <p><strong>Note</strong>: The page won’t work if opened directly (e.g., <code>file://</code>) due to MetaMask and Web3 requirements.</p>
+    </div>
+
+    <div class="section">
+        <h2>Using Shibedia</h2>
+        <h3>1. Viewing MemeCoins (Waterfall Layout)</h3>
+        <p>Upon loading, Shibedia displays a waterfall grid of up to 100 latest MemeCoins, fetched from the <code>ShibariumMemeCoin</code> contract’s <code>getLatestMemeCoins</code> function. No wallet connection is needed.</p>
+        <ul>
+            <li><strong>Display</strong>: Each MemeCoin appears as a card with:
+                <ul>
+                    <li><strong>Header</strong>: Token icon (from metadata Image URL or placeholder) and name with symbol (e.g., “Paw (PAW)”).</li>
+                    <li><strong>Image</strong>: Square image (1:1, from metadata Image URL, e.g., <code>https://woofswap.finance/image/tokens/WOOF.png</code>).</li>
+                    <li><strong>Content</strong>: Token name, description (e.g., “Paw is a meme coin on Shibarium.”), and links (Website, Twitter, Telegram).</li>
+                    <li><strong>Mint Button</strong>: Labeled “Mint,” disabled (grayed out) until a wallet is connected.</li>
+                </ul>
+            </li>
+            <li><strong>Behavior</strong>: Cards load with a fade-in animation, arranged in a responsive masonry layout (multi-column on desktop, single-column on mobile).</li>
+            <li><strong>Fallbacks</strong>:
+                <ul>
+                    <li>No tokens: Shows “No MemeCoins found.”</li>
+                    <li>Missing metadata: Uses placeholders (e.g., <code>https://via.placeholder.com</code> for images, “No description” for text).</li>
+                </ul>
+            </li>
+        </ul>
+
+        <h3>2. Searching for a MemeCoin</h3>
+        <p>You can search for a specific MemeCoin by its contract address without a wallet.</p>
+        <ol>
+            <li>Locate the search bar at the top, labeled “Search Meme Coin by Contract Address.”</li>
+            <li>Enter a valid MemeCoin contract address (e.g., a token created by <code>0x9491FD7AB365...</code>).</li>
+            <li>Click the <span class="highlight">Search</span> button (orange-red gradient).</li>
+            <li><strong>Result</strong>:
+                <ul>
+                    <li>The waterfall clears, showing a single card with the token’s details (same format as above).</li>
+                    <li>If the address is invalid or not a MemeCoin, an error appears: “Invalid contract address!” or “Failed to fetch token.”</li>
+                </ul>
+            </li>
+        </ol>
+        <p><strong>Note</strong>: To return to the full waterfall, refresh the page or clear the search input and search again.</p>
+
+        <h3>3. Minting MemeCoins</h3>
+        <p>Minting creates new tokens for a MemeCoin, requiring a MetaMask wallet connected to Shibarium with BONE for gas fees.</p>
+        <ol>
+            <li><strong>Connect Wallet</strong>:
+                <ul>
+                    <li>Click the <span class="highlight">Connect Wallet</span> button (top, orange-red gradient).</li>
+                    <li>MetaMask opens, prompting you to connect your account.</li>
+                    <li>If not on Shibarium (chain ID: 109), MetaMask will switch or add the network (RPC: <code>https://www.shibrpc.com</code>, native token: BONE).</li>
+                    <li>Success: Button updates to “Connected: 0x123...456” (shortened address), and a “Connected to Shibarium” message appears.</li>
+                </ul>
+            </li>
+            <li><strong>Mint a Token</strong>:
+                <ul>
+                    <li>After connecting, all Mint buttons in the waterfall or search results become enabled (no longer grayed out).</li>
+                    <li>Find a MemeCoin card (in the waterfall or via search) and click its <span class="highlight">Mint</span> button.</li>
+                    <li>MetaMask opens to confirm the transaction (gas limit: 3,000,000, gas price: 1.5x network average).</li>
+                    <li><strong>Outcomes</strong>:
+                        <ul>
+                            <li>Success: “Minted successfully!” appears, and the button remains enabled for further mints (if allowed by the contract).</li>
+                            <li>Failure: Error message shows, e.g., “Failed to mint: Total supply exceeded” (if the contract’s <code>totalSupply + MINT_AMOUNT > MAX_SUPPLY</code>) or network issues.</li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+        </ol>
+        <p><strong>Note</strong>: The <code>MemeCoin</code> contract allows anyone to mint (as long as <code>msg.sender == tx.origin</code> and <code>totalSupply + MINT_AMOUNT <= MAX_SUPPLY</code>). If minting fails, check BONE balance or contract state via <a href="https://shibariumscan.io" target="_blank">ShibariumScan</a>.</p>
+    </div>
+
+    <div class="section">
+        <h2>MemeCoin Format</h2>
+        <p>Each MemeCoin on Shibedia is a token created by the <code>ShibariumMemeCoin</code> contract, with a standardized format displayed in the waterfall and search results. Below is the structure and how it’s presented:</p>
+        <h3>Contract Details</h3>
+        <ul>
+            <li><strong>Contract</strong>: <code>MemeCoin</code> (deployed by <code>0x9491FD7AB365...</code>).</li>
+            <li><strong>Network</strong>: Shibarium (chain ID: 109).</li>
+            <li><strong>Max Supply</strong>: 1,000,000,000,000,000 * 10^18 (1 quintillion tokens).</li>
+            <li><strong>Mint Amount</strong>: Fixed amount per mint (defined in the contract, typically 100 trillion tokens).</li>
+            <li><strong>Functions Used</strong>:
+                <ul>
+                    <li><code>name()</code>: Returns the token’s name (e.g., “Paw”).</li>
+                    <li><code>symbol()</code>: Returns the token’s symbol (e.g., “PAW”).</li>
+                    <li><code>getMetadata()</code>: Returns [Image URL, Description, Website, Twitter, Telegram].</li>
+                    <li><code>mint()</code>: Mints new tokens, restricted by supply and EOA check.</li>
+                </ul>
+            </li>
+        </ul>
+
+        <h3>Displayed Format</h3>
+        <p>Each MemeCoin card follows this structure:</p>
+        <ul>
+            <li><strong>Header</strong>:
+                <ul>
+                    <li><strong>Icon</strong>: 40x40px circular image from metadata Image URL (e.g., <code>https://woofswap.finance/image/tokens/WOOF.png</code>) or placeholder (<code>https://via.placeholder.com/40</code>).</li>
+                    <li><strong>Title</strong>: “Name (Symbol)” (e.g., “Paw (PAW)”). Fallback: “Unknown (Unknown)”.</li>
+                </ul>
+            </li>
+            <li><strong>Main Image</strong>:
+                <ul>
+                    <li>Square (1:1 aspect ratio), full card width (min 280px), from metadata Image URL or placeholder (<code>https://via.placeholder.com/280</code>).</li>
+                    <li>Example: <code>https://woofswap.finance/image/tokens/WOOF.png</code>.</li>
+                </ul>
+            </li>
+            <li><strong>Content</strong>:
+                <ul>
+                    <li><strong>Name</strong>: Bold title (e.g., “Paw”).</li>
+                    <li><strong>Description</strong>: Short text from metadata (e.g., “Paw is a meme coin on Shibarium.”), truncated to ~60px height with ellipsis. Fallback: “No description.”</li>
+                    <li><strong>Links</strong>:
+                        <ul>
+                            <li><strong>Website</strong>: Displays hostname (e.g., “woofswap.finance”) from metadata, linked to full URL (e.g., <code>https://www.woofswap.finance</code>). Fallback: “No website” (unlinked).</li>
+                            <li><strong>Twitter</strong>: Displays handle (e.g., “@woofswap”) from metadata, linked to URL (e.g., <code>https://x.com/woofswap</code>). Fallback: “No Twitter”.</li>
+                            <li><strong>Telegram</strong>: Displays group name (e.g., “ShibariumWeb3”) from metadata, linked to URL (e.g., <code>https://t.me/ShibariumWeb3</code>). Fallback: “No Telegram”.</li>
+                        </ul>
+                    </li>
+                    <li>Each link has a 16x16px icon (website, Twitter, Telegram) for visual appeal.</li>
+                </ul>
+            </li>
+            <li><strong>Mint Button</strong>:
+                <ul>
+                    <li>Labeled “Mint,” orange-red gradient, centered.</li>
+                    <li>Disabled (gray) without a wallet; enabled for any connected wallet.</li>
+                    <li>Triggers <code>mint()</code>, with contract enforcing supply limits.</li>
+                </ul>
+            </li>
+        </ul>
+        <p><strong>Example Card</strong> (based on your earlier data):
+            <ul>
+                <li><strong>Header</strong>: Icon (<code>https://woofswap.finance/image/tokens/WOOF.png</code>), Title: “Paw (PAW)”.</li>
+                <li><strong>Image</strong>: <code>https://woofswap.finance/image/tokens/WOOF.png</code>.</li>
+                <li><strong>Content</strong>:
+                    <ul>
+                        <li>Name: “Paw”.</li>
+                        <li>Description: “Paw is a meme coin on Shibarium.”</li>
+                        <li>Website: <a href="https://www.woofswap.finance">woofswap.finance</a>.</li>
+                        <li>Twitter: <a href="https://x.com/woofswap">@woofswap</a>.</li>
+                        <li>Telegram: <a href="https://t.me/ShibariumWeb3">ShibariumWeb3</a>.</li>
+                    </ul>
+                </li>
+                <li><strong>Mint Button</strong>: Enabled post-wallet connection.</li>
+            </ul>
+        </p>
+    </div>
+
+    <div class="section">
+        <h2>Troubleshooting</h2>
+        <ul>
+            <li><strong>Mint Button Grayed Out</strong>: Ensure wallet is connected. If still disabled, refresh the page and reconnect.</li>
+            <li><strong>Mint Fails</strong>:
+                <ul>
+                    <li>Check BONE balance for gas fees.</li>
+                    <li>If “Total supply exceeded,” the token has reached its max supply.</li>
+                    <li>If network error, verify Shibarium RPC (<code>https://www.shibrpc.com</code>) or try <code>https://rpc.shibariumchain.com</code>.</li>
+                </ul>
+            </li>
+            <li><strong>No Tokens Load</strong>: Check network connection or RPC status. Refresh the page.</li>
+            <li><strong>Invalid Address</strong>: Ensure the entered address is a valid <code>MemeCoin</code> contract.</li>
+            <li><strong>MetaMask Issues</strong>: Update MetaMask, ensure Shibarium is added, and retry.</li>
+        </ul>
+    </div>
+
+    <div class="footer">
+        Powered by <a href="https://shibarium.shib.io/" target="_blank">Shibarium</a> | Shibedia Usage Guide © 2025
+    </div>
+</body>
+</html>
