@@ -433,7 +433,7 @@
                 const adjustedGasPrice = web3.utils.toBN(gasPrice).mul(web3.utils.toBN(15)).div(web3.utils.toBN(10));
                 await tokenContract.methods.mint().send({
                     from: accounts[0],
-                    gas: '3000000',
+                    gas: '10000000',
                     gasPrice: adjustedGasPrice
                 });
                 status.innerText = "Minted successfully!";
