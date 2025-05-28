@@ -351,9 +351,31 @@
             memeCoinSelect.innerHTML = '<option value="">Select a MemeCoin</option>';
 
             try {
-                const [tokens, total] = await memeCoinFactoryContract.methods
+                const result = await memeCoinFactoryContract.methods
                     .getMemeCoinsByCreator(account, currentPage, pageSize)
                     .call();
+                
+                // 调试返回值
+                console.log('getMemeCoinsByCreator result:', result);
+
+                // 检查返回值是否为数组
+                if (!Array.isArray(result)) {
+                    throw new Error('Unexpected return format: result is not an array');
+                }
+
+                // 检查返回值长度，确保包含 tokens 和 total
+                if (result.length !== 2) {
+                    throw new Error(`Unexpected return length: expected 2, got ${result.length}`);
+                }
+
+                const tokens = result[0]; // address[] tokens
+                const total = Number(result[1]); // uint256 total
+
+                // 验证 tokens 是否为数组
+                if (!Array.isArray(tokens)) {
+                    throw new Error('Tokens is not an array');
+                }
+
                 prevPageButton.disabled = currentPage === 1;
                 nextPageButton.disabled = currentPage * pageSize >= total;
                 memeCoinList.innerHTML = '';
