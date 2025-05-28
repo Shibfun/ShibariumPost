@@ -150,28 +150,6 @@
             color: #333333;
             word-break: break-all;
         }
-        .pagination {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 15px;
-        }
-        .pagination button {
-            padding: 8px 15px;
-            background: #ff6f61;
-            color: #ffffff;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.9em;
-        }
-        .pagination button:disabled {
-            background: #cccccc;
-            cursor: not-allowed;
-        }
-        .pagination button:hover:not(:disabled) {
-            background: #e55a50;
-        }
         .footer {
             font-size: 0.9em;
             color: #ffffff;
@@ -215,106 +193,112 @@
         <div class="meme-coin-list">
             <h3>Your MemeCoins</h3>
             <ul id="memeCoinList"></ul>
-            <div class="pagination">
-                <button id="prevPage" disabled>Previous</button>
-                <button id="nextPage" disabled>Next</button>
-            </div>
+        </div>
+        <div class="meme-coin-list">
+            <h3>Latest MemeCoins</h3>
+            <ul id="allMemeCoinList"></ul>
         </div>
     </div>
     <div class="footer">© 2025 WoofSwap. All rights reserved.</div>
 
     <script src="https://cdn.jsdelivr.net/npm/web3@1.7.0/dist/web3.min.js"></script>
     <script>
-        const memeCoinFactoryAddress = '0x6F916F5348dE0b445d5e56d002eEb5a9203Bf8bB';
+        const memeCoinFactoryAddress = '0x9491FD7AB3651904F2D5282bFa97f052698ff8b3';
         const memeCoinFactoryAbi = [
             {
                 "inputs": [
-                    {"internalType": "string", "name": "name", type: "string"},
-                    {"internalType": "string", "name": "symbol", type: "string"}
+                    {"internalType": "string", "name": "name", "type": "string"},
+                    {"internalType": "string", "name": "symbol", "type": "string"}
                 ],
                 "name": "createMemeCoin",
-                "outputs": [{"internalType": "address", "name": "", type: "address"}],
+                "outputs": [{"internalType": "address", "name": "", "type": "address"}],
                 "stateMutability": "nonpayable",
-                type: "function"
+                "type": "function"
             },
             {
                 "inputs": [
-                    {"internalType": "address", "name": "creator", type: "address"},
-                    {"internalType": "uint256", "name": "page", type: "uint256"},
-                    {"internalType": "uint256", "name": "pageSize", type: "uint256"}
+                    {"internalType": "address", "name": "creator", "type": "address"}
                 ],
-                "name": "getMemeCoinsByCreator",
+                "name": "getLatestMemeCoinsByCreator",
                 "outputs": [
-                    {"internalType": "address[]", "name": "tokens", type: "address[]"},
-                    {"internalType": "uint256", "name": "total", type: "uint256"}
+                    {"internalType": "address[]", "name": "tokens", "type": "address[]"}
                 ],
                 "stateMutability": "view",
-                type: "function"
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "getLatestMemeCoins",
+                "outputs": [
+                    {"internalType": "address[]", "name": "tokens", "type": "address[]"}
+                ],
+                "stateMutability": "view",
+                "type": "function"
             },
             {
                 "anonymous": false,
                 "inputs": [
-                    {"indexed": true, "internalType": "address", "name": "tokenAddress", type: "address"},
-                    {"indexed": true, "internalType": "address", "name": "owner", type: "address"},
-                    {"indexed": false, "internalType": "string", "name": "name", type: "string"},
-                    {"indexed": false, "internalType": "string", "name": "symbol", type: "string"}
+                    {"indexed": true, "internalType": "address", "name": "tokenAddress", "type": "address"},
+                    {"indexed": true, "internalType": "address", "name": "owner", "type": "address"},
+                    {"indexed": false, "internalType": "string", "name": "name", "type": "string"},
+                    {"indexed": false, "internalType": "string", "name": "symbol", "type": "string"}
                 ],
                 "name": "MemeCoinCreated",
-                type: "event"
+                "type": "event"
             }
         ];
         const memeCoinAbi = [
             {
                 "inputs": [
-                    {"internalType": "string", "name": "_imageUrl", type: "string"},
-                    {"internalType": "string", "name": "_description", type: "string"},
-                    {"internalType": "string", "name": "_websiteUrl", type: "string"},
-                    {"internalType": "string", "name": "_twitterUrl", type: "string"},
-                    {"internalType": "string", "name": "_telegramUrl", type: "string"}
+                    {"internalType": "string", "name": "_imageUrl", "type": "string"},
+                    {"internalType": "string", "name": "_description", "type": "string"},
+                    {"internalType": "string", "name": "_websiteUrl", "type": "string"},
+                    {"internalType": "string", "name": "_twitterUrl", "type": "string"},
+                    {"internalType": "string", "name": "_telegramUrl", "type": "string"}
                 ],
                 "name": "setMetadata",
                 "outputs": [],
                 "stateMutability": "nonpayable",
-                type: "function"
+                "type": "function"
             },
             {
                 "inputs": [],
                 "name": "getMetadata",
                 "outputs": [
-                    {"internalType": "string", "name": "", type: "string"},
-                    {"internalType": "string", "name": "", type: "string"},
-                    {"internalType": "string", "name": "", type: "string"},
-                    {"internalType": "string", "name": "", type: "string"},
-                    {"internalType": "string", "name": "", type: "string"}
+                    {"internalType": "string", "name": "", "type": "string"},
+                    {"internalType": "string", "name": "", "type": "string"},
+                    {"internalType": "string", "name": "", "type": "string"},
+                    {"internalType": "string", "name": "", "type": "string"},
+                    {"internalType": "string", "name": "", "type": "string"}
                 ],
                 "stateMutability": "view",
-                type: "function"
+                "type": "function"
             },
             {
                 "inputs": [],
                 "name": "name",
-                "outputs": [{"internalType": "string", "name": "", type: "string"}],
+                "outputs": [{"internalType": "string", "name": "", "type": "string"}],
                 "stateMutability": "view",
-                type: "function"
+                "type": "function"
             },
             {
                 "inputs": [],
                 "name": "symbol",
-                "outputs": [{"internalType": "string", "name": "", type: "string"}],
+                "outputs": [{"internalType": "string", "name": "", "type": "string"}],
                 "stateMutability": "view",
-                type: "function"
+                "type": "function"
             },
             {
                 "anonymous": false,
                 "inputs": [
-                    {"indexed": false, "internalType": "string", "name": "imageUrl", type: "string"},
-                    {"indexed": false, "internalType": "string", "name": "description", type: "string"},
-                    {"indexed": false, "internalType": "string", "name": "websiteUrl", type: "string"},
-                    {"indexed": false, "internalType": "string", "name": "twitterUrl", type: "string"},
-                    {"indexed": false, "internalType": "string", "name": "telegramUrl", type: "string"}
+                    {"indexed": false, "internalType": "string", "name": "imageUrl", "type": "string"},
+                    {"indexed": false, "internalType": "string", "name": "description", "type": "string"},
+                    {"indexed": false, "internalType": "string", "name": "websiteUrl", "type": "string"},
+                    {"indexed": false, "internalType": "string", "name": "twitterUrl", "type": "string"},
+                    {"indexed": false, "internalType": "string", "name": "telegramUrl", "type": "string"}
                 ],
                 "name": "MetadataUpdated",
-                type: "event"
+                "type": "event"
             }
         ];
 
@@ -328,8 +312,6 @@
         };
 
         let web3, account, memeCoinFactoryContract;
-        const page = 1; // 固定 page 为 1
-        const pageSize = 5; // 固定 pageSize 为 5
 
         function updateButtons() {
             const createButton = document.getElementById('createButton');
@@ -343,105 +325,86 @@
 
         async function fetchMemeCoins() {
             if (!account || !memeCoinFactoryContract) {
-                console.error('Account or contract not initialized:', { account, memeCoinFactoryContract });
                 document.getElementById('networkStatus').innerText = 'Please connect wallet and initialize contract.';
                 return;
             }
 
             const memeCoinList = document.getElementById('memeCoinList');
+            const allMemeCoinList = document.getElementById('allMemeCoinList');
             const memeCoinSelect = document.getElementById('memeCoinSelect');
-            const prevPageButton = document.getElementById('prevPage');
-            const nextPageButton = document.getElementById('nextPage');
-            memeCoinList.innerHTML = '<li>Loading MemeCoins...</li>';
+            memeCoinList.innerHTML = '<li>Loading Your MemeCoins...</li>';
+            allMemeCoinList.innerHTML = '<li>Loading Latest MemeCoins...</li>';
             memeCoinSelect.innerHTML = '<option value="">Select a MemeCoin</option>';
 
             try {
-                console.log('Fetching MemeCoins for creator:', account);
-                console.log('Parameters:', { page, pageSize });
-
-                // 严格按照要求调用：getMemeCoinsByCreator(account, 1, 5)
-                const result = await memeCoinFactoryContract.methods
-                    .getMemeCoinsByCreator(account, page, pageSize)
+                // 查询用户创建的最新 100 个 MemeCoin
+                const userTokens = await memeCoinFactoryContract.methods
+                    .getLatestMemeCoinsByCreator(account)
                     .call();
 
-                console.log('getMemeCoinsByCreator raw result:', result);
-
-                // 检查返回值是否为 undefined 或 null
-                if (result === undefined || result === null) {
-                    throw new Error('Contract call returned undefined or null');
-                }
-
-                let tokens, total;
-
-                // 适配可能的返回值格式
-                if (Array.isArray(result)) {
-                    // 格式为 [tokens, total]
-                    console.log('Result is an array');
-                    tokens = result[0];
-                    total = Number(result[1]);
-                } else if (result && typeof result === 'object') {
-                    // 格式为 { "0": tokens, "1": total } 或 { tokens, total }
-                    console.log('Result is an object');
-                    if ('0' in result && '1' in result) {
-                        tokens = result['0'];
-                        total = Number(result['1']);
-                    } else if ('tokens' in result && 'total' in result) {
-                        tokens = result.tokens;
-                        total = Number(result.total);
-                    } else {
-                        console.log('Object keys:', Object.keys(result));
-                        throw new Error('Unexpected object format: missing expected keys');
-                    }
-                } else {
-                    throw new Error(`Unexpected return type: ${typeof result}`);
-                }
-
-                // 验证 tokens 是否为数组
-                if (!Array.isArray(tokens)) {
-                    throw new Error(`Tokens is not an array, got: ${typeof tokens}`);
-                }
-
-                console.log('Parsed tokens:', tokens);
-                console.log('Parsed total:', total);
-
-                // 禁用分页按钮，因为 page 固定为 1
-                prevPageButton.disabled = true;
-                nextPageButton.disabled = true;
                 memeCoinList.innerHTML = '';
-
-                // 显示查询结果
-                if (tokens.length === 0) {
+                if (userTokens.length === 0) {
                     memeCoinList.innerHTML = '<li>No MemeCoins found.</li>';
-                    return;
+                } else {
+                    for (const tokenAddress of userTokens) {
+                        const memeCoinContract = new web3.eth.Contract(memeCoinAbi, tokenAddress);
+                        const name = await memeCoinContract.methods.name().call();
+                        const symbol = await memeCoinContract.methods.symbol().call();
+                        const [imageUrl, description, websiteUrl, twitterUrl, telegramUrl] = await memeCoinContract.methods.getMetadata().call();
+
+                        const li = document.createElement('li');
+                        li.innerHTML = `
+                            <strong>Address:</strong> ${tokenAddress}<br>
+                            <strong>Name:</strong> ${name}<br>
+                            <strong>Symbol:</strong> ${symbol}<br>
+                            <strong>Image URL:</strong> ${imageUrl || 'Not set'}<br>
+                            <strong>Description:</strong> ${description || 'Not set'}<br>
+                            <strong>Website:</strong> ${websiteUrl || 'Not set'}<br>
+                            <strong>Twitter:</strong> ${twitterUrl || 'Not set'}<br>
+                            <strong>Telegram:</strong> ${telegramUrl || 'Not set'}
+                        `;
+                        memeCoinList.appendChild(li);
+
+                        const option = document.createElement('option');
+                        option.value = tokenAddress;
+                        option.text = `${name} (${symbol})`;
+                        memeCoinSelect.appendChild(option);
+                    }
                 }
 
-                for (const tokenAddress of tokens) {
-                    const memeCoinContract = new web3.eth.Contract(memeCoinAbi, tokenAddress);
-                    const name = await memeCoinContract.methods.name().call();
-                    const symbol = await memeCoinContract.methods.symbol().call();
-                    const [imageUrl, description, websiteUrl, twitterUrl, telegramUrl] = await memeCoinContract.methods.getMetadata().call();
+                // 查询所有最新 100 个 MemeCoin
+                const allTokens = await memeCoinFactoryContract.methods
+                    .getLatestMemeCoins()
+                    .call();
 
-                    const li = document.createElement('li');
-                    li.innerHTML = `
-                        <strong>Address:</strong> ${tokenAddress}<br>
-                        <strong>Name:</strong> ${name}<br>
-                        <strong>Symbol:</strong> ${symbol}<br>
-                        <strong>Image URL:</strong> ${imageUrl || 'Not set'}<br>
-                        <strong>Description:</strong> ${description || 'Not set'}<br>
-                        <strong>Website:</strong> ${websiteUrl || 'Not set'}<br>
-                        <strong>Twitter:</strong> ${twitterUrl || 'Not set'}<br>
-                        <strong>Telegram:</strong> ${telegramUrl || 'Not set'}
-                    `;
-                    memeCoinList.appendChild(li);
+                allMemeCoinList.innerHTML = '';
+                if (allTokens.length === 0) {
+                    allMemeCoinList.innerHTML = '<li>No MemeCoins found.</li>';
+                } else {
+                    for (const tokenAddress of allTokens) {
+                        const memeCoinContract = new web3.eth.Contract(memeCoinAbi, tokenAddress);
+                        const name = await memeCoinContract.methods.name().call();
+                        const symbol = await memeCoinContract.methods.symbol().call();
+                        const [imageUrl, description, websiteUrl, twitterUrl, telegramUrl] = await memeCoinContract.methods.getMetadata().call();
 
-                    const option = document.createElement('option');
-                    option.value = tokenAddress;
-                    option.text = `${name} (${symbol})`;
-                    memeCoinSelect.appendChild(option);
+                        const li = document.createElement('li');
+                        li.innerHTML = `
+                            <strong>Address:</strong> ${tokenAddress}<br>
+                            <strong>Name:</strong> ${name}<br>
+                            <strong>Symbol:</strong> ${symbol}<br>
+                            <strong>Image URL:</strong> ${imageUrl || 'Not set'}<br>
+                            <strong>Description:</strong> ${description || 'Not set'}<br>
+                            <strong>Website:</strong> ${websiteUrl || 'Not set'}<br>
+                            <strong>Twitter:</strong> ${twitterUrl || 'Not set'}<br>
+                            <strong>Telegram:</strong> ${telegramUrl || 'Not set'}
+                        `;
+                        allMemeCoinList.appendChild(li);
+                    }
                 }
             } catch (error) {
                 console.error('Fetch MemeCoins Error:', error);
-                memeCoinList.innerHTML = '<li>Error loading MemeCoins.</li>';
+                memeCoinList.innerHTML = '<li>Error loading Your MemeCoins.</li>';
+                allMemeCoinList.innerHTML = '<li>Error loading Latest MemeCoins.</li>';
                 document.getElementById('networkStatus').innerText = `Failed to fetch MemeCoins: ${error.message || 'Check console for details'}`;
             }
             updateButtons();
@@ -456,12 +419,8 @@
                     document.getElementById('connectWalletButton').innerText = `Connected: ${account.slice(0, 6)}...${account.slice(-4)}`;
                     await switchNetwork('Shibarium');
                     await initializeContracts();
-                    document.getElementById('networkStatus').innerText = `Connected to Shibarium, waiting 5 seconds to fetch MemeCoins...`;
-
-                    // 等待 5 秒后查询 Meme 币
-                    setTimeout(async () => {
-                        await fetchMemeCoins();
-                    }, 5000);
+                    document.getElementById('networkStatus').innerText = `Connected to Shibarium, fetching MemeCoins...`;
+                    await fetchMemeCoins();
 
                     window.ethereum.on('accountsChanged', async (accounts) => {
                         if (accounts.length === 0) {
@@ -469,11 +428,8 @@
                         } else {
                             account = accounts[0];
                             document.getElementById('connectWalletButton').innerText = `Connected: ${account.slice(0, 6)}...${account.slice(-4)}`;
-                            document.getElementById('networkStatus').innerText = `Account changed, waiting 5 seconds to fetch MemeCoins...`;
-                            // 账户切换后也等待 5 秒再查询
-                            setTimeout(async () => {
-                                await fetchMemeCoins();
-                            }, 5000);
+                            document.getElementById('networkStatus').innerText = `Account changed, fetching MemeCoins...`;
+                            await fetchMemeCoins();
                         }
                     });
 
@@ -493,6 +449,7 @@
             document.getElementById('connectWalletButton').innerText = 'Connect Wallet';
             document.getElementById('networkStatus').innerText = 'Click to connect...';
             document.getElementById('memeCoinList').innerHTML = '';
+            document.getElementById('allMemeCoinList').innerHTML = '';
             document.getElementById('memeCoinSelect').innerHTML = '<option value="">Select a MemeCoin</option>';
             updateButtons();
         }
@@ -642,12 +599,6 @@
         document.getElementById('nameInput').addEventListener('input', updateButtons);
         document.getElementById('symbolInput').addEventListener('input', updateButtons);
         document.getElementById('memeCoinSelect').addEventListener('change', updateButtons);
-        document.getElementById('prevPage').addEventListener('click', async () => {
-            // 由于 page 固定为 1，分页按钮无作用
-        });
-        document.getElementById('nextPage').addEventListener('click', async () => {
-            // 由于 page 固定为 1，分页按钮无作用
-        });
     </script>
 </body>
 </html>
