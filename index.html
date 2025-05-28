@@ -351,25 +351,29 @@
             memeCoinSelect.innerHTML = '<option value="">Select a MemeCoin</option>';
 
             try {
+                console.log('Fetching MemeCoins for account:', account);
+                console.log('Parameters:', { page: currentPage, pageSize });
+
                 const result = await memeCoinFactoryContract.methods
                     .getMemeCoinsByCreator(account, currentPage, pageSize)
                     .call();
-                
-                // 调试返回值
+
                 console.log('getMemeCoinsByCreator result:', result);
 
-                // 检查返回值是否为数组
-                if (!Array.isArray(result)) {
-                    throw new Error('Unexpected return format: result is not an array');
-                }
+                let tokens, total;
 
-                // 检查返回值长度，确保包含 tokens 和 total
-                if (result.length !== 2) {
-                    throw new Error(`Unexpected return length: expected 2, got ${result.length}`);
+                // 适配不同的返回值格式
+                if (Array.isArray(result)) {
+                    // 格式为 [tokens, total]
+                    tokens = result[0];
+                    total = Number(result[1]);
+                } else if (result && typeof result === 'object' && '0' in result && '1' in result) {
+                    // 格式为 { "0": tokens, "1": total }
+                    tokens = result[0];
+                    total = Number(result[1]);
+                } else {
+                    throw new Error('Unexpected return format: result is neither an array nor a valid object');
                 }
-
-                const tokens = result[0]; // address[] tokens
-                const total = Number(result[1]); // uint256 total
 
                 // 验证 tokens 是否为数组
                 if (!Array.isArray(tokens)) {
