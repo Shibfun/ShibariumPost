@@ -106,13 +106,11 @@
             padding: 12px;
             border-bottom: 1px solid #dbdbdb;
         }
-        .post-header img {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            object-fit: cover;
+        .post-header span {
+            font-size: 1.1em;
+            font-weight: 400;
+            color: #262626;
             margin-right: 8px;
-            border: 2px solid #ff6b6b;
         }
         .post-header h3 {
             font-size: 1.1em;
@@ -132,8 +130,6 @@
         .post-header .copy-button img {
             width: 16px;
             height: 16px;
-            border: none;
-            margin: 0;
         }
         .post-header .copy-button:hover {
             background: rgba(255, 107, 107, 0.1);
@@ -204,7 +200,9 @@
         .action-buttons {
             padding: 12px;
             border-top: 1px solid #dbdbdb;
-            text-align: center;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
         }
         .action-buttons button {
             padding: 10px 24px;
@@ -223,6 +221,28 @@
         .action-buttons button:hover:not(:disabled) {
             transform: scale(1.05);
             box-shadow: 0 4px 8px rgba(255, 107, 107, 0.3);
+        }
+        .action-buttons .copy-contract-button {
+            position: relative;
+        }
+        .action-buttons .copy-contract-button .tooltip {
+            visibility: hidden;
+            background: #333;
+            color: #fff;
+            font-size: 0.8em;
+            padding: 4px 8px;
+            border-radius: 4px;
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .action-buttons .copy-contract-button.copied .tooltip {
+            visibility: visible;
+            opacity: 1;
         }
         .status {
             font-size: 0.9em;
@@ -249,9 +269,10 @@
             .search-box { flex-direction: column; }
             .search-box input, .search-box button { width: 100%; }
             .waterfall { grid-template-columns: 1fr; }
-            .post-header h3 { font-size: 1em; }
+            .post-header span, .post-header h3 { font-size: 1em; }
             .post-content h4 { font-size: 1.1em; }
             .post-content p.description { font-size: 0.9em; }
+            .action-buttons { flex-direction: column; gap: 8px; }
         }
     </style>
 </head>
@@ -375,9 +396,9 @@
                     card.className = 'post-card';
                     card.innerHTML = `
                         <div class="post-header">
-                            <img src="${metadata[0] || 'https://pbs.twimg.com/media/GrjooHUboAMteD-?format=jpg'}" alt="Icon">
+                            <span>Created by</span>
                             <h3>${shortOwner}</h3>
-                            <button class="copy-button" data-address="${owner}" title="Copy Address">
+                            <button class="copy-button" data-address="${owner}" title="Copy Owner Address">
                                 <img src="https://img.icons8.com/ios-filled/16/000000/copy.png" alt="Copy">
                                 <span class="tooltip">Copied!</span>
                             </button>
@@ -401,6 +422,7 @@
                         </div>
                         <div class="action-buttons">
                             <button class="mint-button" data-address="${token}" ${!accounts ? 'disabled' : ''}>Mint</button>
+                            <button class="copy-contract-button" data-address="${token}" title="Copy Contract Address">Copy Contract<span class="tooltip">Copied!</span></button>
                         </div>
                     `;
                     waterfall.appendChild(card);
@@ -410,6 +432,17 @@
                     button.addEventListener('click', () => {
                         const address = button.dataset.address;
                         if (address && address !== "None") {
+                            navigator.clipboard.writeText(address).then(() => {
+                                button.classList.add('copied');
+                                setTimeout(() => button.classList.remove('copied'), 2000);
+                            });
+                        }
+                    });
+                });
+                document.querySelectorAll('.copy-contract-button').forEach(button => {
+                    button.addEventListener('click', () => {
+                        const address = button.dataset.address;
+                        if (address) {
                             navigator.clipboard.writeText(address).then(() => {
                                 button.classList.add('copied');
                                 setTimeout(() => button.classList.remove('copied'), 2000);
@@ -448,9 +481,9 @@
                 card.className = 'post-card';
                 card.innerHTML = `
                     <div class="post-header">
-                        <img src="${metadata[0] || 'https://pbs.twimg.com/media/GrjooHUboAMteD-?format=jpg'}" alt="Icon">
+                        <span>Created by</span>
                         <h3>${shortOwner}</h3>
-                        <button class="copy-button" data-address="${owner}" title="Copy Address">
+                        <button class="copy-button" data-address="${owner}" title="Copy Owner Address">
                             <img src="https://img.icons8.com/ios-filled/16/000000/copy.png" alt="Copy">
                             <span class="tooltip">Copied!</span>
                         </button>
@@ -474,6 +507,7 @@
                     </div>
                     <div class="action-buttons">
                         <button class="mint-button" data-address="${tokenAddress}" ${!accounts ? 'disabled' : ''}>Mint</button>
+                        <button class="copy-contract-button" data-address="${tokenAddress}" title="Copy Contract Address">Copy Contract<span class="tooltip">Copied!</span></button>
                     </div>
                 `;
                 waterfall.appendChild(card);
@@ -484,6 +518,15 @@
                         navigator.clipboard.writeText(address).then(() => {
                             document.querySelector('.copy-button').classList.add('copied');
                             setTimeout(() => document.querySelector('.copy-button').classList.remove('copied'), 2000);
+                        });
+                    }
+                });
+                document.querySelector('.copy-contract-button').addEventListener('click', () => {
+                    const address = document.querySelector('.copy-contract-button').dataset.address;
+                    if (address) {
+                        navigator.clipboard.writeText(address).then(() => {
+                            document.querySelector('.copy-contract-button').classList.add('copied');
+                            setTimeout(() => document.querySelector('.copy-contract-button').classList.remove('copied'), 2000);
                         });
                     }
                 });
