@@ -26,7 +26,8 @@
         p { margin-bottom: 15px; }
         ul, ol { margin: 10px 0 20px 20px; }
         li { margin-bottom: 10px; }
-        code { background: #f4f4f4; padding: 2px 6px; border-radius: 4px; }
+        a { color: #ff6b6b; text-decoration: none; }
+        a:hover { text-decoration: underline; }
         .highlight {
             color: #ff6b6b;
             font-weight: 600;
@@ -46,10 +47,6 @@
         }
         .footer a {
             color: #ff6b6b;
-            text-decoration: none;
-        }
-        .footer a:hover {
-            text-decoration: underline;
         }
         @media (max-width: 600px) {
             body { padding: 10px; }
@@ -62,163 +59,115 @@
 <body>
     <div class="section">
         <h1>Shibedia Usage Guide</h1>
-        <p>Welcome to <span class="highlight">Shibedia</span>, a vibrant platform to explore and interact with MemeCoins on the Shibarium blockchain. This guide walks you through how to use the Shibedia page to view, search, and mint MemeCoins, and explains the MemeCoin format displayed on the site.</p>
-    </div>
-
-    <div class="section">
-        <h2>Overview</h2>
-        <p>Shibedia is a web-based interface styled like Instagram, showcasing MemeCoins created via the <code>ShibariumMemeCoin</code> contract (address: <code>0x9491FD7AB3651904F2D5282bFa97f052698ff8b3</code>) on Shibarium (chain ID: 109). It features a waterfall (masonry) layout of up to 100 recent MemeCoins, a search function for specific tokens, and a minting feature for users with a connected wallet.</p>
-        <ul>
-            <li><strong>View MemeCoins</strong>: Browse the latest 100 MemeCoins without a wallet.</li>
-            <li><strong>Search Tokens</strong>: Find a specific MemeCoin by its contract address.</li>
-            <li><strong>Mint Tokens</strong>: Mint new tokens from a MemeCoin contract after connecting a wallet.</li>
-        </ul>
+        <p>Welcome to <span class="highlight">Shibedia</span>, your fun and easy way to explore, create, and mint MemeCoins on the Shibarium blockchain! This guide shows you how to deploy a MemeCoin, set its details, view tokens on Shibedia, and mint new tokens.</p>
     </div>
 
     <div class="section">
         <h2>Getting Started</h2>
-        <h3>Requirements</h3>
+        <p>Shibedia is a web platform with an Instagram-like look, where you can browse MemeCoins, search for specific tokens, or mint new ones. You don’t need a wallet to view or search, but you’ll need one to create or mint tokens.</p>
+        <h3>What You Need</h3>
         <ul>
             <li><strong>Web Browser</strong>: Chrome, Firefox, or any modern browser.</li>
-            <li><strong>MetaMask (Optional)</strong>: Install the MetaMask extension for minting. Not required for viewing or searching.</li>
-            <li><strong>BONE Tokens</strong>: Shibarium’s native token for gas fees, needed for minting.</li>
+            <li><strong>MetaMask</strong>: Install the <a href="https://metamask.io" target="_blank">MetaMask</a> extension for creating or minting MemeCoins.</li>
+            <li><strong>BONE Tokens</strong>: Shibarium’s currency for transaction fees, needed for deploying, setting details, or minting.</li>
         </ul>
-
-    <div class="section">
-        <h2>Using Shibedia</h2>
-        <h3>1. Viewing MemeCoins (Waterfall Layout)</h3>
-        <p>Upon loading, Shibedia displays a waterfall grid of up to 100 latest MemeCoins, fetched from the <code>ShibariumMemeCoin</code> contract’s <code>getLatestMemeCoins</code> function. No wallet connection is needed.</p>
-        <ul>
-            <li><strong>Display</strong>: Each MemeCoin appears as a card with:
-                <ul>
-                    <li><strong>Header</strong>: Token icon (from metadata Image URL or placeholder) and name with symbol (e.g., “Paw (PAW)”).</li>
-                    <li><strong>Image</strong>: Square image (1:1, from metadata Image URL, e.g., <code>https://woofswap.finance/image/tokens/WOOF.png</code>).</li>
-                    <li><strong>Content</strong>: Token name, description (e.g., “Paw is a meme coin on Shibarium.”), and links (Website, Twitter, Telegram).</li>
-                    <li><strong>Mint Button</strong>: Labeled “Mint,” disabled (grayed out) until a wallet is connected.</li>
-                </ul>
-            </li>
-            <li><strong>Behavior</strong>: Cards load with a fade-in animation, arranged in a responsive masonry layout (multi-column on desktop, single-column on mobile).</li>
-            <li><strong>Fallbacks</strong>:
-                <ul>
-                    <li>No tokens: Shows “No MemeCoins found.”</li>
-                    <li>Missing metadata: Uses placeholders (e.g., <code>https://via.placeholder.com</code> for images, “No description” for text).</li>
-                </ul>
-            </li>
-        </ul>
-
-        <h3>2. Searching for a MemeCoin</h3>
-        <p>You can search for a specific MemeCoin by its contract address without a wallet.</p>
-        <ol>
-            <li>Locate the search bar at the top, labeled “Search Meme Coin by Contract Address.”</li>
-            <li>Enter a valid MemeCoin contract address (e.g., a token created by <code>0x9491FD7AB365...</code>).</li>
-            <li>Click the <span class="highlight">Search</span> button (orange-red gradient).</li>
-            <li><strong>Result</strong>:
-                <ul>
-                    <li>The waterfall clears, showing a single card with the token’s details (same format as above).</li>
-                    <li>If the address is invalid or not a MemeCoin, an error appears: “Invalid contract address!” or “Failed to fetch token.”</li>
-                </ul>
-            </li>
-        </ol>
-        <p><strong>Note</strong>: To return to the full waterfall, refresh the page or clear the search input and search again.</p>
-
-        <h3>3. Minting MemeCoins</h3>
-        <p>Minting creates new tokens for a MemeCoin, requiring a MetaMask wallet connected to Shibarium with BONE for gas fees.</p>
-        <ol>
-            <li><strong>Connect Wallet</strong>:
-                <ul>
-                    <li>Click the <span class="highlight">Connect Wallet</span> button (top, orange-red gradient).</li>
-                    <li>MetaMask opens, prompting you to connect your account.</li>
-                    <li>If not on Shibarium (chain ID: 109), MetaMask will switch or add the network (RPC: <code>https://www.shibrpc.com</code>, native token: BONE).</li>
-                    <li>Success: Button updates to “Connected: 0x123...456” (shortened address), and a “Connected to Shibarium” message appears.</li>
-                </ul>
-            </li>
-            <li><strong>Mint a Token</strong>:
-                <ul>
-                    <li>After connecting, all Mint buttons in the waterfall or search results become enabled (no longer grayed out).</li>
-                    <li>Find a MemeCoin card (in the waterfall or via search) and click its <span class="highlight">Mint</span> button.</li>
-                    <li>MetaMask opens to confirm the transaction (gas limit: 3,000,000, gas price: 1.5x network average).</li>
-                    <li><strong>Outcomes</strong>:
-                        <ul>
-                            <li>Success: “Minted successfully!” appears, and the button remains enabled for further mints (if allowed by the contract).</li>
-                            <li>Failure: Error message shows, e.g., “Failed to mint: Total supply exceeded” (if the contract’s <code>totalSupply + MINT_AMOUNT > MAX_SUPPLY</code>) or network issues.</li>
-                        </ul>
-                    </li>
-                </ul>
-            </li>
-        </ol>
-        <p><strong>Note</strong>: The <code>MemeCoin</code> contract allows anyone to mint (as long as <code>msg.sender == tx.origin</code> and <code>totalSupply + MINT_AMOUNT <= MAX_SUPPLY</code>). If minting fails, check BONE balance or contract state via <a href="https://shibariumscan.io" target="_blank">ShibariumScan</a>.</p>
     </div>
 
     <div class="section">
-        <h2>MemeCoin Format</h2>
-        <p>Each MemeCoin on Shibedia is a token created by the <code>ShibariumMemeCoin</code> contract, with a standardized format displayed in the waterfall and search results. Below is the structure and how it’s presented:</p>
-        <h3>Contract Details</h3>
-        <ul>
-            <li><strong>Contract</strong>: <code>MemeCoin</code> (deployed by <code>0x9491FD7AB365...</code>).</li>
-            <li><strong>Network</strong>: Shibarium (chain ID: 109).</li>
-            <li><strong>Max Supply</strong>: 1,000,000,000,000,000 * 10^18 (1 quintillion tokens).</li>
-            <li><strong>Mint Amount</strong>: Fixed amount per mint (defined in the contract, typically 100 trillion tokens).</li>
-            <li><strong>Functions Used</strong>:
-                <ul>
-                    <li><code>name()</code>: Returns the token’s name (e.g., “Paw”).</li>
-                    <li><code>symbol()</code>: Returns the token’s symbol (e.g., “PAW”).</li>
-                    <li><code>getMetadata()</code>: Returns [Image URL, Description, Website, Twitter, Telegram].</li>
-                    <li><code>mint()</code>: Mints new tokens, restricted by supply and EOA check.</li>
-                </ul>
-            </li>
-        </ul>
+        <h2>How to Use Shibedia</h2>
+        <h3>1. Deploy a MemeCoin</h3>
+        <p>Create your own MemeCoin on Shibarium using the deployment page.</p>
+        <ol>
+            <li>Visit <a href="https://shibfun.github.io/ShibariumPost/" target="_blank">https://shibfun.github.io/ShibariumPost/</a>.</li>
+            <li>Click “Connect Wallet” to link your MetaMask wallet to Shibarium.</li>
+            <li>Enter your token’s name (e.g., “Paw”), symbol (e.g., “PAW”), and other details.</li>
+            <li>Click “Deploy” and confirm the transaction in MetaMask (requires BONE for fees).</li>
+            <li>Once confirmed, you’ll get a contract address for your new MemeCoin.</li>
+        </ol>
 
-        <h3>Displayed Format</h3>
-        <p>Each MemeCoin card follows this structure:</p>
+        <h3>2. Set MemeCoin Details</h3>
+        <p>Add a picture, description, and links to make your MemeCoin stand out.</p>
+        <ol>
+            <li>Go to <a href="https://shibfun.github.io/ShibariumPost/SetInfo/" target="_blank">https://shibfun.github.io/ShibariumPost/SetInfo/</a>.</li>
+            <li>Connect your MetaMask wallet (must be the token’s owner).</li>
+            <li>Enter your MemeCoin’s contract address.</li>
+            <li>Click “Verify Owner” to confirm you own the token.</li>
+            <li>Fill in:
+                <ul>
+                    <li><strong>Image URL</strong>: Link to a square image (e.g., <code>https://woofswap.finance/image/tokens/WOOF.png</code>).</li>
+                    <li><strong>Description</strong>: Short text (e.g., “Paw is a meme coin on Shibarium.”).</li>
+                    <li><strong>Website</strong>: Your site (e.g., <code>https://www.woofswap.finance</code>).</li>
+                    <li><strong>Twitter</strong>: Twitter link (e.g., <code>https://x.com/woofswap</code>).</li>
+                    <li><strong>Telegram</strong>: Telegram group (e.g., <code>https://t.me/ShibariumWeb3</code>).</li>
+                </ul>
+            </li>
+            <li>Click “Set Metadata” and confirm in MetaMask.</li>
+            <li>Your token’s details will appear on Shibedia.</li>
+        </ol>
+
+        <h3>3. View MemeCoins on Shibedia</h3>
+        <p>Browse or search MemeCoins on the Shibedia page.</p>
+        <ol>
+            <li>Visit <a href="https://shibfun.github.io/ShibariumPost/Shibedia/" target="_blank">https://shibfun.github.io/ShibariumPost/Shibedia/</a>.</li>
+            <li><strong>Browse</strong>:
+                <ul>
+                    <li>The page shows up to 100 recent MemeCoins in a grid, like Instagram posts.</li>
+                    <li>Each card has a square image, name (e.g., “Paw”), symbol (e.g., “PAW”), description, and links (website, Twitter, Telegram).</li>
+                    <li>No wallet is needed to view.</li>
+                </ul>
+            </li>
+            <li><strong>Search</strong>:
+                <ul>
+                    <li>Enter a MemeCoin contract address in the search bar.</li>
+                    <li>Click <span class="highlight">Search</span> to show that token’s card.</li>
+                    <li>If the address is wrong, you’ll see an error like “Invalid contract address!”</li>
+                </ul>
+            </li>
+        </ol>
+
+        <h3>4. Mint MemeCoins</h3>
+        <p>Mint new tokens from any MemeCoin to get some for yourself.</p>
+        <ol>
+            <li>Go to <a href="https://shibfun.github.io/ShibariumPost/Shibedia/" target="_blank">Shibedia</a>.</li>
+            <li>Click <span class="highlight">Connect Wallet</span> to link MetaMask to Shibarium.</li>
+            <li>Find a MemeCoin (in the grid or via search).</li>
+            <li>Click the <span class="highlight">Mint</span> button on its card (enabled after wallet connection).</li>
+            <li>Confirm the transaction in MetaMask (needs BONE for fees).</li>
+            <li><strong>Results</strong>:
+                <ul>
+                    <li>Success: You’ll see “Minted successfully!” and receive tokens.</li>
+                    <li>Failure: An error shows, e.g., “Failed to mint: Total supply exceeded” if no more tokens can be minted.</li>
+                </ul>
+            </li>
+        </ol>
+    </div>
+
+    <div class="section">
+        <h2>MemeCoin Economics</h2>
+        <p>Every MemeCoin on Shibedia follows simple rules for how tokens are created and distributed:</p>
         <ul>
-            <li><strong>Header</strong>:
+            <li><strong>Total Tokens</strong>: Each MemeCoin has a maximum of 1 quintillion tokens (1,000,000,000,000,000 * 10^18).</li>
+            <li><strong>Pre-Minted</strong>: 10% of tokens (100 trillion) are automatically given to the creator (owner) when the MemeCoin is deployed.</li>
+            <li><strong>Public Minting</strong>: The remaining 90% (900 trillion) can be minted by anyone.
                 <ul>
-                    <li><strong>Icon</strong>: 40x40px circular image from metadata Image URL (e.g., <code>https://woofswap.finance/image/tokens/WOOF.png</code>) or placeholder (<code>https://via.placeholder.com/40</code>).</li>
-                    <li><strong>Title</strong>: “Name (Symbol)” (e.g., “Paw (PAW)”). Fallback: “Unknown (Unknown)”.</li>
+                    <li>Each mint creates a fixed amount (usually 100 trillion tokens).</li>
+                    <li>Anyone with a wallet can mint, as long as there are tokens left.</li>
+                    <li>The contract stops minting when the total supply hits the maximum.</li>
                 </ul>
             </li>
-            <li><strong>Main Image</strong>:
+            <li><strong>Rules</strong>:
                 <ul>
-                    <li>Square (1:1 aspect ratio), full card width (min 280px), from metadata Image URL or placeholder (<code>https://via.placeholder.com/280</code>).</li>
-                    <li>Example: <code>https://woofswap.finance/image/tokens/WOOF.png</code>.</li>
-                </ul>
-            </li>
-            <li><strong>Content</strong>:
-                <ul>
-                    <li><strong>Name</strong>: Bold title (e.g., “Paw”).</li>
-                    <li><strong>Description</strong>: Short text from metadata (e.g., “Paw is a meme coin on Shibarium.”), truncated to ~60px height with ellipsis. Fallback: “No description.”</li>
-                    <li><strong>Links</strong>:
-                        <ul>
-                            <li><strong>Website</strong>: Displays hostname (e.g., “woofswap.finance”) from metadata, linked to full URL (e.g., <code>https://www.woofswap.finance</code>). Fallback: “No website” (unlinked).</li>
-                            <li><strong>Twitter</strong>: Displays handle (e.g., “@woofswap”) from metadata, linked to URL (e.g., <code>https://x.com/woofswap</code>). Fallback: “No Twitter”.</li>
-                            <li><strong>Telegram</strong>: Displays group name (e.g., “ShibariumWeb3”) from metadata, linked to URL (e.g., <code>https://t.me/ShibariumWeb3</code>). Fallback: “No Telegram”.</li>
-                        </ul>
-                    </li>
-                    <li>Each link has a 16x16px icon (website, Twitter, Telegram) for visual appeal.</li>
-                </ul>
-            </li>
-            <li><strong>Mint Button</strong>:
-                <ul>
-                    <li>Labeled “Mint,” orange-red gradient, centered.</li>
-                    <li>Disabled (gray) without a wallet; enabled for any connected wallet.</li>
-                    <li>Triggers <code>mint()</code>, with contract enforcing supply limits.</li>
+                    <li>Only real users (not smart contracts) can mint.</li>
+                    <li>You need BONE to pay transaction fees.</li>
+                    <li>Minting stops automatically when all tokens are created.</li>
                 </ul>
             </li>
         </ul>
-        <p><strong>Example Card</strong> (based on your earlier data):
+        <p><strong>Example</strong>: For a MemeCoin like “Paw”:
             <ul>
-                <li><strong>Header</strong>: Icon (<code>https://woofswap.finance/image/tokens/WOOF.png</code>), Title: “Paw (PAW)”.</li>
-                <li><strong>Image</strong>: <code>https://woofswap.finance/image/tokens/WOOF.png</code>.</li>
-                <li><strong>Content</strong>:
-                    <ul>
-                        <li>Name: “Paw”.</li>
-                        <li>Description: “Paw is a meme coin on Shibarium.”</li>
-                        <li>Website: <a href="https://www.woofswap.finance">woofswap.finance</a>.</li>
-                        <li>Twitter: <a href="https://x.com/woofswap">@woofswap</a>.</li>
-                        <li>Telegram: <a href="https://t.me/ShibariumWeb3">ShibariumWeb3</a>.</li>
-                    </ul>
-                </li>
-                <li><strong>Mint Button</strong>: Enabled post-wallet connection.</li>
+                <li>Owner gets 100 trillion tokens at creation.</li>
+                <li>Anyone can mint 100 trillion tokens per transaction, up to 900 trillion total.</li>
+                <li>Once 1 quintillion tokens are minted, no more can be created.</li>
             </ul>
         </p>
     </div>
@@ -226,17 +175,17 @@
     <div class="section">
         <h2>Troubleshooting</h2>
         <ul>
-            <li><strong>Mint Button Grayed Out</strong>: Ensure wallet is connected. If still disabled, refresh the page and reconnect.</li>
-            <li><strong>Mint Fails</strong>:
+            <li><strong>Can’t Connect Wallet</strong>: Install or update MetaMask, ensure Shibarium is added, and try again.</li>
+            <li><strong>Mint Button Disabled</strong>: Connect your wallet. If still grayed out, refresh the page.</li>
+            <li><strong>Minting Fails</strong>:
                 <ul>
-                    <li>Check BONE balance for gas fees.</li>
-                    <li>If “Total supply exceeded,” the token has reached its max supply.</li>
-                    <li>If network error, verify Shibarium RPC (<code>https://www.shibrpc.com</code>) or try <code>https://rpc.shibariumchain.com</code>.</li>
+                    <li>Ensure you have enough BONE for fees.</li>
+                    <li>If “Total supply exceeded,” the MemeCoin is fully minted.</li>
+                    <li>Check network status at <a href="https://shibariumscan.io" target="_blank">ShibariumScan</a>.</li>
                 </ul>
             </li>
-            <li><strong>No Tokens Load</strong>: Check network connection or RPC status. Refresh the page.</li>
-            <li><strong>Invalid Address</strong>: Ensure the entered address is a valid <code>MemeCoin</code> contract.</li>
-            <li><strong>MetaMask Issues</strong>: Update MetaMask, ensure Shibarium is added, and retry.</li>
+            <li><strong>No Tokens Show</strong>: Refresh the page or check your internet connection.</li>
+            <li><strong>Search Fails</strong>: Verify the contract address is correct.</li>
         </ul>
     </div>
 
