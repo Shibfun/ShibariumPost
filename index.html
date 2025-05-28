@@ -223,98 +223,98 @@
     </div>
     <div class="footer">© 2025 WoofSwap. All rights reserved.</div>
 
-    <script src="https://cdn.jsdelivr.net/npm/web3@1.7.0/dist/web3.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
     <script>
         const memeCoinFactoryAddress = '0x6F916F5348dE0b445d5e56d002eEb5a9203Bf8bB';
         const memeCoinFactoryAbi = [
             {
                 "inputs": [
-                    {"internalType": "string", "name": "name", "type": "string"},
-                    {"internalType": "string", "name": "symbol", "type": "string"}
+                    {"internalType": "string", "name": "name", type: "string"},
+                    {"internalType": "string", "name": "symbol", type: "string"}
                 ],
                 "name": "createMemeCoin",
-                "outputs": [{"internalType": "address", "name": "", "type": "address"}],
+                "outputs": [{"internalType": "address", "name": "", type: "address"}],
                 "stateMutability": "nonpayable",
-                "type": "function"
+                type: "function"
             },
             {
                 "inputs": [
-                    {"internalType": "address", "name": "creator", "type": "address"},
-                    {"internalType": "uint256", "name": "page", "type": "uint256"},
-                    {"internalType": "uint256", "name": "pageSize", "type": "uint256"}
+                    {"internalType": "address", "name": "creator", type: "address"},
+                    {"internalType": "uint256", "name": "page", type: "uint256"},
+                    {"internalType": "uint256", "name": "pageSize", type: "uint256"}
                 ],
                 "name": "getMemeCoinsByCreator",
                 "outputs": [
-                    {"internalType": "address[]", "name": "tokens", "type": "address[]"},
-                    {"internalType": "uint256", "name": "total", "type": "uint256"}
+                    {"internalType": "address[]", "name": "tokens", type: "address[]"},
+                    {"internalType": "uint256", "name": "total", type: "uint256"}
                 ],
                 "stateMutability": "view",
-                "type": "function"
+                type: "function"
             },
             {
                 "anonymous": false,
                 "inputs": [
-                    {"indexed": true, "internalType": "address", "name": "tokenAddress", "type": "address"},
-                    {"indexed": true, "internalType": "address", "name": "owner", "type": "address"},
-                    {"indexed": false, "internalType": "string", "name": "name", "type": "string"},
-                    {"indexed": false, "internalType": "string", "name": "symbol", "type": "string"}
+                    {"indexed": true, "internalType": "address", "name": "tokenAddress", type: "address"},
+                    {"indexed": true, "internalType": "address", "name": "owner", type: "address"},
+                    {"indexed": false, "internalType": "string", "name": "name", type: "string"},
+                    {"indexed": false, "internalType": "string", "name": "symbol", type: "string"}
                 ],
                 "name": "MemeCoinCreated",
-                "type": "event"
+                type: "event"
             }
         ];
         const memeCoinAbi = [
             {
                 "inputs": [
-                    {"internalType": "string", "name": "_imageUrl", "type": "string"},
-                    {"internalType": "string", "name": "_description", "type": "string"},
-                    {"internalType": "string", "name": "_websiteUrl", "type": "string"},
-                    {"internalType": "string", "name": "_twitterUrl", "type": "string"},
-                    {"internalType": "string", "name": "_telegramUrl", "type": "string"}
+                    {"internalType": "string", "name": "_imageUrl", type: "string"},
+                    {"internalType": "string", "name": "_description", type: "string"},
+                    {"internalType": "string", "name": "_websiteUrl", type: "string"},
+                    {"internalType": "string", "name": "_twitterUrl", type: "string"},
+                    {"internalType": "string", "name": "_telegramUrl", type: "string"}
                 ],
                 "name": "setMetadata",
                 "outputs": [],
                 "stateMutability": "nonpayable",
-                "type": "function"
+                type: "function"
             },
             {
                 "inputs": [],
                 "name": "getMetadata",
                 "outputs": [
-                    {"internalType": "string", "name": "", "type": "string"},
-                    {"internalType": "string", "name": "", "type": "string"},
-                    {"internalType": "string", "name": "", "type": "string"},
-                    {"internalType": "string", "name": "", "type": "string"},
-                    {"internalType": "string", "name": "", "type": "string"}
+                    {"internalType": "string", "name": "", type: "string"},
+                    {"internalType": "string", "name": "", type: "string"},
+                    {"internalType": "string", "name": "", type: "string"},
+                    {"internalType": "string", "name": "", type: "string"},
+                    {"internalType": "string", "name": "", type: "string"}
                 ],
                 "stateMutability": "view",
-                "type": "function"
+                type: "function"
             },
             {
                 "inputs": [],
                 "name": "name",
-                "outputs": [{"internalType": "string", "name": "", "type": "string"}],
+                "outputs": [{"internalType": "string", "name": "", type: "string"}],
                 "stateMutability": "view",
-                "type": "function"
+                type: "function"
             },
             {
                 "inputs": [],
                 "name": "symbol",
-                "outputs": [{"internalType": "string", "name": "", "type": "string"}],
+                "outputs": [{"internalType": "string", "name": "", type: "string"}],
                 "stateMutability": "view",
-                "type": "function"
+                type: "function"
             },
             {
                 "anonymous": false,
                 "inputs": [
-                    {"indexed": false, "internalType": "string", "name": "imageUrl", "type": "string"},
-                    {"indexed": false, "internalType": "string", "name": "description", "type": "string"},
-                    {"indexed": false, "internalType": "string", "name": "websiteUrl", "type": "string"},
-                    {"indexed": false, "internalType": "string", "name": "twitterUrl", "type": "string"},
-                    {"indexed": false, "internalType": "string", "name": "telegramUrl", "type": "string"}
+                    {"indexed": false, "internalType": "string", "name": "imageUrl", type: "string"},
+                    {"indexed": false, "internalType": "string", "name": "description", type: "string"},
+                    {"indexed": false, "internalType": "string", "name": "websiteUrl", type: "string"},
+                    {"indexed": false, "internalType": "string", "name": "twitterUrl", type: "string"},
+                    {"indexed": false, "internalType": "string", "name": "telegramUrl", type: "string"}
                 ],
                 "name": "MetadataUpdated",
-                "type": "event"
+                type: "event"
             }
         ];
 
@@ -337,8 +337,6 @@
             const nameInput = document.getElementById('nameInput').value;
             const symbolInput = document.getElementById('symbolInput').value;
             const memeCoinSelect = document.getElementById('memeCoinSelect').value;
-            const imageUrlInput = document.getElementById('imageUrlInput').value;
-            const descriptionInput = document.getElementById('descriptionInput').value;
             createButton.disabled = !account || !nameInput.trim() || !symbolInput.trim();
             setMetadataButton.disabled = !account || !memeCoinSelect;
         }
@@ -349,7 +347,7 @@
             const memeCoinSelect = document.getElementById('memeCoinSelect');
             const prevPageButton = document.getElementById('prevPage');
             const nextPageButton = document.getElementById('nextPage');
-            memeCoinList.innerHTML = '';
+            memeCoinList.innerHTML = '<li>Loading MemeCoins...</li>';
             memeCoinSelect.innerHTML = '<option value="">Select a MemeCoin</option>';
 
             try {
@@ -358,6 +356,12 @@
                     .call();
                 prevPageButton.disabled = currentPage === 1;
                 nextPageButton.disabled = currentPage * pageSize >= total;
+                memeCoinList.innerHTML = '';
+
+                if (tokens.length === 0) {
+                    memeCoinList.innerHTML = '<li>No MemeCoins found.</li>';
+                    return;
+                }
 
                 for (const tokenAddress of tokens) {
                     const memeCoinContract = new web3.eth.Contract(memeCoinAbi, tokenAddress);
@@ -384,7 +388,9 @@
                     memeCoinSelect.appendChild(option);
                 }
             } catch (error) {
-                document.getElementById('networkStatus').innerText = `Failed to fetch MemeCoins: ${error.message || 'Unknown error'}`;
+                console.error('Fetch MemeCoins Error:', error);
+                memeCoinList.innerHTML = '<li>Error loading MemeCoins.</li>';
+                document.getElementById('networkStatus').innerText = `Failed to fetch MemeCoins: ${error.message || 'Check console for details'}`;
             }
             updateButtons();
         }
@@ -400,13 +406,35 @@
                     await initializeContracts();
                     document.getElementById('networkStatus').innerText = `Connected to Shibarium`;
                     await fetchMemeCoins();
-                    updateButtons();
+
+                    window.ethereum.on('accountsChanged', async (accounts) => {
+                        if (accounts.length === 0) {
+                            resetUI();
+                        } else {
+                            account = accounts[0];
+                            document.getElementById('connectWalletButton').innerText = `Connected: ${account.slice(0, 6)}...${account.slice(-4)}`;
+                            await fetchMemeCoins();
+                        }
+                    });
+
+                    window.ethereum.on('disconnect', () => {
+                        resetUI();
+                    });
                 } catch (error) {
                     document.getElementById('networkStatus').innerText = `Failed to connect wallet: ${error.message || 'Unknown error'}`;
                 }
             } else {
                 document.getElementById('networkStatus').innerText = 'Please install MetaMask';
             }
+        }
+
+        function resetUI() {
+            account = null;
+            document.getElementById('connectWalletButton').innerText = 'Connect Wallet';
+            document.getElementById('networkStatus').innerText = 'Click to connect...';
+            document.getElementById('memeCoinList').innerHTML = '';
+            document.getElementById('memeCoinSelect').innerHTML = '<option value="">Select a MemeCoin</option>';
+            updateButtons();
         }
 
         async function switchNetwork(chain) {
@@ -486,6 +514,7 @@
                 status.innerText = `MemeCoin created! Transaction Hash: ${tx.transactionHash}`;
                 document.getElementById('nameInput').value = '';
                 document.getElementById('symbolInput').value = '';
+                currentPage = 1;
                 await fetchMemeCoins();
             } catch (error) {
                 let errorMessage = error.message || 'Unknown error';
@@ -546,6 +575,7 @@
                 document.getElementById('websiteUrlInput').value = '';
                 document.getElementById('twitterUrlInput').value = '';
                 document.getElementById('telegramUrlInput').value = '';
+                currentPage = 1;
                 await fetchMemeCoins();
             } catch (error) {
                 let errorMessage = error.message || 'Unknown error';
