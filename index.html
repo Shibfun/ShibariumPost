@@ -223,7 +223,7 @@
     </div>
     <div class="footer">© 2025 WoofSwap. All rights reserved.</div>
 
-    <script src="https://cdn.jsdelivr.net/npm/web3@1.8.0/dist/web3.min.js"></script>
+    <script src="https://cdn.ethers.io/lib/ethers-5.7.umd.min.js"></script>
     <script>
         const memeCoinFactoryAddress = '0x6F916F5348dE0b445d5e56d002eEb5a9203Bf8bB';
         const memeCoinFactoryAbi = [
@@ -327,7 +327,7 @@
             }
         };
 
-        let web3, account, memeCoinFactoryContract;
+        let provider, signer, account, memeCoinFactoryContract;
         let currentPage = 1;
         const pageSize = 5;
 
@@ -359,52 +359,11 @@
                 console.log('Fetching MemeCoins for account:', account);
                 console.log('Parameters:', { page: currentPage, pageSize });
 
-                // 直接调用合约方法
-                const result = await memeCoinFactoryContract.methods
-                    .getMemeCoinsByCreator(account, currentPage, pageSize)
-                    .call();
-
-                console.log('getMemeCoinsByCreator raw result:', result);
-
-                // 检查 result 是否为 undefined 或 null
-                if (result === undefined || result === null) {
-                    throw new Error('Contract call returned undefined or null');
-                }
-
-                let tokens, total;
-
-                // 适配不同的返回值格式
-                if (Array.isArray(result)) {
-                    // 格式为 [tokens, total]
-                    console.log('Result is an array');
-                    tokens = result[0];
-                    total = Number(result[1]);
-                } else if (result && typeof result === 'object') {
-                    // 格式为 { "0": tokens, "1": total, tokens: ..., total: ... }
-                    console.log('Result is an object');
-                    if ('0' in result && '1' in result) {
-                        tokens = result[0];
-                        total = Number(result[1]);
-                    } else if ('tokens' in result && 'total' in result) {
-                        tokens = result.tokens;
-                        total = Number(result.total);
-                    } else {
-                        throw new Error('Unexpected object format: missing expected keys');
-                    }
-                } else {
-                    throw new Error(`Unexpected return type: ${typeof result}`);
-                }
-
-                // 验证 tokens 是否为数组
-                if (!Array.isArray(tokens)) {
-                    throw new Error('Tokens is not an array');
-                }
-
-                console.log('Parsed tokens:', tokens);
-                console.log('Parsed total:', total);
+                const [tokens, total] = await memeCoinFactoryContract.getMemeCoinsByCreator(account, currentPage, pageSize);
+                console.log('getMemeCoinsByCreator result:', { tokens, total });
 
                 prevPageButton.disabled = currentPage === 1;
-                nextPageButton.disabled = currentPage * pageSize >= total;
+                nextPageButton.disabled = currentPage * pageSize >= total.toNumber();
                 memeCoinList.innerHTML = '';
 
                 if (tokens.length === 0) {
@@ -413,10 +372,10 @@
                 }
 
                 for (const tokenAddress of tokens) {
-                    const memeCoinContract = new web3.eth.Contract(memeCoinAbi, tokenAddress);
-                    const name = await memeCoinContract.methods.name().call();
-                    const symbol = await memeCoinContract.methods.symbol().call();
-                    const [imageUrl, description, websiteUrl, twitterUrl, telegramUrl] = await memeCoinContract.methods.getMetadata().call();
+                    const memeCoinContract = new ethers.Contract(tokenAddress, memeCoinAbi, signer);
+                    const name = await memeCoinContract.name();
+                    const symbol = await memeCoinContract.symbol();
+                    const [imageUrl, description, websiteUrl, twitterUrl, telegramUrl] = await memeCoinContract.getMetadata();
 
                     const li = document.createElement('li');
                     li.innerHTML = `
@@ -446,10 +405,11 @@
 
         async function initializeWeb3() {
             if (window.ethereum) {
-                web3 = new Web3(window.ethereum);
+                provider = new ethers.providers.Web3Provider(window.ethereum);
                 try {
                     await window.ethereum.request({ method: 'eth_requestAccounts' });
-                    account = (await web3.eth.getAccounts())[0];
+                    signer = provider.getSigner();
+                    account = await signer.getAddress();
                     document.getElementById('connectWalletButton').innerText = `Connected: ${account.slice(0, 6)}...${account.slice(-4)}`;
                     await switchNetwork('Shibarium');
                     await initializeContracts();
@@ -512,23 +472,7 @@
         }
 
         async function initializeContracts() {
-            memeCoinFactoryContract = new web3.eth.Contract(memeCoinFactoryAbi, memeCoinFactoryAddress);
-        }
-
-        async function waitForTransaction(txHash) {
-            let receipt = null;
-            const maxAttempts = 60;
-            let attempts = 0;
-            while (attempts < maxAttempts) {
-                receipt = await web3.eth.getTransactionReceipt(txHash);
-                if (receipt) {
-                    if (receipt.status) return receipt;
-                    throw new Error(`Transaction ${txHash} failed`);
-                }
-                await new Promise(resolve => setTimeout(resolve, 2000));
-                attempts++;
-            }
-            throw new Error(`Transaction ${txHash} not confirmed after ${maxAttempts} attempts`);
+            memeCoinFactoryContract = new ethers.Contract(memeCoinFactoryAddress, memeCoinFactoryAbi, signer);
         }
 
         async function createMemeCoin() {
@@ -537,7 +481,7 @@
             const nameInput = document.getElementById('nameInput').value;
             const symbolInput = document.getElementById('symbolInput').value;
 
-            if (!web3 || !account) {
+            if (!account) {
                 status.innerText = 'Please connect wallet first.';
                 return;
             }
@@ -552,15 +496,12 @@
                 createButton.innerHTML = 'Creating... <span class="spinner"></span>';
                 status.innerText = 'Creating MemeCoin...';
 
-                const currentGasPrice = await web3.eth.getGasPrice();
-                const adjustedGasPrice = web3.utils.toBN(currentGasPrice).mul(web3.utils.toBN(15)).div(web3.utils.toBN(10));
-                const tx = await memeCoinFactoryContract.methods.createMemeCoin(nameInput, symbolInput).send({
-                    from: account,
-                    gas: web3.utils.toHex(3000000),
-                    gasPrice: web3.utils.toHex(adjustedGasPrice)
+                const tx = await memeCoinFactoryContract.createMemeCoin(nameInput, symbolInput, {
+                    gasLimit: 3000000
                 });
+                const receipt = await tx.wait();
 
-                status.innerText = `MemeCoin created! Transaction Hash: ${tx.transactionHash}`;
+                status.innerText = `MemeCoin created! Transaction Hash: ${receipt.transactionHash}`;
                 document.getElementById('nameInput').value = '';
                 document.getElementById('symbolInput').value = '';
                 currentPage = 1;
@@ -592,7 +533,7 @@
             const twitterUrl = document.getElementById('twitterUrlInput').value;
             const telegramUrl = document.getElementById('telegramUrlInput').value;
 
-            if (!web3 || !account) {
+            if (!account) {
                 status.innerText = 'Please connect wallet first.';
                 return;
             }
@@ -607,18 +548,13 @@
                 setMetadataButton.innerHTML = 'Setting Metadata... <span class="spinner"></span>';
                 status.innerText = 'Setting metadata...';
 
-                const memeCoinContract = new web3.eth.Contract(memeCoinAbi, memeCoinAddress);
-                const currentGasPrice = await web3.eth.getGasPrice();
-                const adjustedGasPrice = web3.utils.toBN(currentGasPrice).mul(web3.utils.toBN(15)).div(web3.utils.toBN(10));
-                const tx = await memeCoinContract.methods
-                    .setMetadata(imageUrl, description, websiteUrl, twitterUrl, telegramUrl)
-                    .send({
-                        from: account,
-                        gas: web3.utils.toHex(1000000),
-                        gasPrice: web3.utils.toHex(adjustedGasPrice)
-                    });
+                const memeCoinContract = new ethers.Contract(memeCoinAddress, memeCoinAbi, signer);
+                const tx = await memeCoinContract.setMetadata(imageUrl, description, websiteUrl, twitterUrl, telegramUrl, {
+                    gasLimit: 1000000
+                });
+                const receipt = await tx.wait();
 
-                status.innerText = `Metadata set! Transaction Hash: ${tx.transactionHash}`;
+                status.innerText = `Metadata set! Transaction Hash: ${receipt.transactionHash}`;
                 document.getElementById('imageUrlInput').value = '';
                 document.getElementById('descriptionInput').value = '';
                 document.getElementById('websiteUrlInput').value = '';
