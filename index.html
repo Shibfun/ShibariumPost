@@ -328,8 +328,8 @@
         };
 
         let web3, account, memeCoinFactoryContract;
-        let currentPage = 1;
-        const pageSize = 5;
+        const page = 1; // 固定 page 为 1
+        const pageSize = 5; // 固定 pageSize 为 5
 
         function updateButtons() {
             const createButton = document.getElementById('createButton');
@@ -357,28 +357,30 @@
 
             try {
                 console.log('Fetching MemeCoins for creator:', account);
-                console.log('Parameters:', { page: currentPage, pageSize });
+                console.log('Parameters:', { page, pageSize });
 
-                // 直接调用合约方法
-                const method = memeCoinFactoryContract.methods.getMemeCoinsByCreator(account, currentPage, pageSize);
-                console.log('Contract method:', method);
+                // 严格按照你的要求调用：getMemeCoinsByCreator(account, 1, 5)
+                const result = await memeCoinFactoryContract.methods
+                    .getMemeCoinsByCreator(account, page, pageSize)
+                    .call();
 
-                const result = await method.call();
                 console.log('getMemeCoinsByCreator raw result:', result);
 
-                // 检查 result 是否为 undefined 或 null
+                // 检查返回值是否为 undefined 或 null
                 if (result === undefined || result === null) {
                     throw new Error('Contract call returned undefined or null');
                 }
 
                 let tokens, total;
 
-                // 适配不同的返回值格式
+                // 适配可能的返回值格式
                 if (Array.isArray(result)) {
+                    // 格式为 [tokens, total]
                     console.log('Result is an array');
                     tokens = result[0];
                     total = Number(result[1]);
                 } else if (result && typeof result === 'object') {
+                    // 格式为 { "0": tokens, "1": total } 或 { tokens, total }
                     console.log('Result is an object');
                     if ('0' in result && '1' in result) {
                         tokens = result['0'];
@@ -402,10 +404,12 @@
                 console.log('Parsed tokens:', tokens);
                 console.log('Parsed total:', total);
 
-                prevPageButton.disabled = currentPage === 1;
-                nextPageButton.disabled = currentPage * pageSize >= total;
+                // 禁用分页按钮，因为 page 固定为 1
+                prevPageButton.disabled = true;
+                nextPageButton.disabled = true;
                 memeCoinList.innerHTML = '';
 
+                // 显示查询结果
                 if (tokens.length === 0) {
                     memeCoinList.innerHTML = '<li>No MemeCoins found.</li>';
                     return;
@@ -514,22 +518,6 @@
             memeCoinFactoryContract = new web3.eth.Contract(memeCoinFactoryAbi, memeCoinFactoryAddress);
         }
 
-        async function waitForTransaction(txHash) {
-            let receipt = null;
-            const maxAttempts = 60;
-            let attempts = 0;
-            while (attempts < maxAttempts) {
-                receipt = await web3.eth.getTransactionReceipt(txHash);
-                if (receipt) {
-                    if (receipt.status) return receipt;
-                    throw new Error(`Transaction ${txHash} failed`);
-                }
-                await new Promise(resolve => setTimeout(resolve, 2000));
-                attempts++;
-            }
-            throw new Error(`Transaction ${txHash} not confirmed after ${maxAttempts} attempts`);
-        }
-
         async function createMemeCoin() {
             const status = document.getElementById('networkStatus');
             const createButton = document.getElementById('createButton');
@@ -562,7 +550,6 @@
                 status.innerText = `MemeCoin created! Transaction Hash: ${tx.transactionHash}`;
                 document.getElementById('nameInput').value = '';
                 document.getElementById('symbolInput').value = '';
-                currentPage = 1;
                 await fetchMemeCoins();
             } catch (error) {
                 let errorMessage = error.message || 'Unknown error';
@@ -623,7 +610,6 @@
                 document.getElementById('websiteUrlInput').value = '';
                 document.getElementById('twitterUrlInput').value = '';
                 document.getElementById('telegramUrlInput').value = '';
-                currentPage = 1;
                 await fetchMemeCoins();
             } catch (error) {
                 let errorMessage = error.message || 'Unknown error';
@@ -649,14 +635,10 @@
         document.getElementById('symbolInput').addEventListener('input', updateButtons);
         document.getElementById('memeCoinSelect').addEventListener('change', updateButtons);
         document.getElementById('prevPage').addEventListener('click', async () => {
-            if (currentPage > 1) {
-                currentPage--;
-                await fetchMemeCoins();
-            }
+            // 由于 page 固定为 1，分页按钮无作用
         });
         document.getElementById('nextPage').addEventListener('click', async () => {
-            currentPage++;
-            await fetchMemeCoins();
+            // 由于 page 固定为 1，分页按钮无作用
         });
     </script>
 </body>
