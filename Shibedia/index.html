@@ -117,6 +117,45 @@
         .post-header h3 {
             font-size: 1.1em;
             font-weight: 600;
+            flex-grow: 1;
+            margin-right: 8px;
+        }
+        .post-header .copy-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+        .post-header .copy-button img {
+            width: 16px;
+            height: 16px;
+            border: none;
+            margin: 0;
+        }
+        .post-header .copy-button:hover {
+            background: rgba(255, 107, 107, 0.1);
+            border-radius: 4px;
+        }
+        .post-header .copy-button .tooltip {
+            visibility: hidden;
+            background: #333;
+            color: #fff;
+            font-size: 0.8em;
+            padding: 4px 8px;
+            border-radius: 4px;
+            position: absolute;
+            top: -30px;
+            right: 0;
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .post-header .copy-button.copied .tooltip {
+            visibility: visible;
+            opacity: 1;
         }
         .post-image {
             width: 100%;
@@ -245,7 +284,8 @@
             {"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},
             {"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},
             {"inputs":[],"name":"getMetadata","outputs":[{"internalType":"string","name":"","type":"string"},{"internalType":"string","name":"","type":"string"},{"internalType":"string","name":"","type":"string"},{"internalType":"string","name":"","type":"string"},{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},
-            {"inputs":[],"name":"mint","outputs":[],"stateMutability":"nonpayable","type":"function"}
+            {"inputs":[],"name":"mint","outputs":[],"stateMutability":"nonpayable","type":"function"},
+            {"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"}
         ];
         const shibarium = {
             chainId: 109,
@@ -253,6 +293,11 @@
             explorerUrl: 'https://shibariumscan.io',
             rpcUrl: 'https://www.shibrpc.com'
         };
+
+        function shortenAddress(address) {
+            if (!address || address === "0x0000000000000000000000000000000000000000") return "None";
+            return `${address.slice(0, 6)}...${address.slice(-4)}`;
+        }
 
         async function initializeWeb3() {
             web3 = new Web3(shibarium.rpcUrl);
@@ -316,20 +361,26 @@
                 }
                 for (const token of tokens.slice(0, 100)) {
                     const tokenContract = new web3.eth.Contract(memeTokenABI, token);
-                    let name = 'Unknown', symbol = 'Unknown', metadata = ['', '', '', '', ''];
+                    let name = 'Unknown', symbol = 'Unknown', metadata = ['', '', '', '', ''], owner = 'None';
                     try {
                         name = await tokenContract.methods.name().call();
                         symbol = await tokenContract.methods.symbol().call();
                         metadata = await tokenContract.methods.getMetadata().call();
+                        owner = await tokenContract.methods.owner().call();
                     } catch (error) {
                         console.warn(`Failed to fetch token ${token}: ${error.message}`);
                     }
+                    const shortOwner = shortenAddress(owner);
                     const card = document.createElement('div');
                     card.className = 'post-card';
                     card.innerHTML = `
                         <div class="post-header">
                             <img src="${metadata[0] || 'https://via.placeholder.com/40'}" alt="Icon">
-                            <h3>${name} (${symbol})</h3>
+                            <h3>${shortOwner}</h3>
+                            <button class="copy-button" data-address="${owner}" title="Copy Address">
+                                <img src="https://img.icons8.com/ios-filled/16/000000/copy.png" alt="Copy">
+                                <span class="tooltip">Copied!</span>
+                            </button>
                         </div>
                         <img class="post-image" src="${metadata[0] || 'https://via.placeholder.com/280'}" alt="Image">
                         <div class="post-content">
@@ -355,6 +406,17 @@
                     waterfall.appendChild(card);
                 }
                 status.innerText = "";
+                document.querySelectorAll('.copy-button').forEach(button => {
+                    button.addEventListener('click', () => {
+                        const address = button.dataset.address;
+                        if (address && address !== "None") {
+                            navigator.clipboard.writeText(address).then(() => {
+                                button.classList.add('copied');
+                                setTimeout(() => button.classList.remove('copied'), 2000);
+                            });
+                        }
+                    });
+                });
                 document.querySelectorAll('.mint-button').forEach(button => {
                     button.addEventListener('click', () => mintToken(button.dataset.address));
                 });
@@ -371,21 +433,27 @@
             try {
                 status.innerText = "Searching token...";
                 const tokenContract = new web3.eth.Contract(memeTokenABI, tokenAddress);
-                let name, symbol, metadata;
+                let name, symbol, metadata, owner;
                 try {
                     name = await tokenContract.methods.name().call();
                     symbol = await tokenContract.methods.symbol().call();
                     metadata = await tokenContract.methods.getMetadata().call();
+                    owner = await tokenContract.methods.owner().call();
                 } catch (error) {
                     throw new Error("Failed to fetch token details: " + error.message);
                 }
+                const shortOwner = shortenAddress(owner);
                 waterfall.innerHTML = '';
                 const card = document.createElement('div');
                 card.className = 'post-card';
                 card.innerHTML = `
                     <div class="post-header">
                         <img src="${metadata[0] || 'https://via.placeholder.com/40'}" alt="Icon">
-                        <h3>${name} (${symbol})</h3>
+                        <h3>${shortOwner}</h3>
+                        <button class="copy-button" data-address="${owner}" title="Copy Address">
+                            <img src="https://img.icons8.com/ios-filled/16/000000/copy.png" alt="Copy">
+                            <span class="tooltip">Copied!</span>
+                        </button>
                     </div>
                     <img class="post-image" src="${metadata[0] || 'https://via.placeholder.com/280'}" alt="Image">
                     <div class="post-content">
@@ -410,6 +478,15 @@
                 `;
                 waterfall.appendChild(card);
                 status.innerText = "";
+                document.querySelector('.copy-button').addEventListener('click', () => {
+                    const address = document.querySelector('.copy-button').dataset.address;
+                    if (address && address !== "None") {
+                        navigator.clipboard.writeText(address).then(() => {
+                            document.querySelector('.copy-button').classList.add('copied');
+                            setTimeout(() => document.querySelector('.copy-button').classList.remove('copied'), 2000);
+                        });
+                    }
+                });
                 document.querySelector('.mint-button').addEventListener('click', () => mintToken(tokenAddress));
             } catch (error) {
                 status.innerText = "Failed to fetch token: " + (error.message.includes('revert') ? error.message.split('revert')[1]?.trim() : error.message);
