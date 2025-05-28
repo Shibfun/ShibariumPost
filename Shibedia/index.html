@@ -245,8 +245,7 @@
             {"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},
             {"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},
             {"inputs":[],"name":"getMetadata","outputs":[{"internalType":"string","name":"","type":"string"},{"internalType":"string","name":"","type":"string"},{"internalType":"string","name":"","type":"string"},{"internalType":"string","name":"","type":"string"},{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},
-            {"inputs":[],"name":"mint","outputs":[],"stateMutability":"nonpayable","type":"function"},
-            {"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}
+            {"inputs":[],"name":"mint","outputs":[],"stateMutability":"nonpayable","type":"function"}
         ];
         const shibarium = {
             chainId: 109,
@@ -254,7 +253,6 @@
             explorerUrl: 'https://shibariumscan.io',
             rpcUrl: 'https://www.shibrpc.com'
         };
-        const maxSupply = BigInt("1000000000000000000000000000000");
 
         async function initializeWeb3() {
             web3 = new Web3(shibarium.rpcUrl);
@@ -318,16 +316,14 @@
                 }
                 for (const token of tokens.slice(0, 100)) {
                     const tokenContract = new web3.eth.Contract(memeTokenABI, token);
-                    let name = 'Unknown', symbol = 'Unknown', metadata = ['', '', '', '', ''], totalSupply = BigInt(0);
+                    let name = 'Unknown', symbol = 'Unknown', metadata = ['', '', '', '', ''];
                     try {
                         name = await tokenContract.methods.name().call();
                         symbol = await tokenContract.methods.symbol().call();
                         metadata = await tokenContract.methods.getMetadata().call();
-                        totalSupply = BigInt(await tokenContract.methods.totalSupply().call());
                     } catch (error) {
                         console.warn(`Failed to fetch token ${token}: ${error.message}`);
                     }
-                    const canMint = totalSupply < maxSupply;
                     const card = document.createElement('div');
                     card.className = 'post-card';
                     card.innerHTML = `
@@ -353,7 +349,7 @@
                             </div>
                         </div>
                         <div class="action-buttons">
-                            <button class="mint-button" data-address="${token}" ${!accounts || !canMint ? 'disabled' : ''}>Mint</button>
+                            <button class="mint-button" data-address="${token}" ${!accounts ? 'disabled' : ''}>Mint</button>
                         </div>
                     `;
                     waterfall.appendChild(card);
@@ -375,16 +371,14 @@
             try {
                 status.innerText = "Searching token...";
                 const tokenContract = new web3.eth.Contract(memeTokenABI, tokenAddress);
-                let name, symbol, metadata, totalSupply;
+                let name, symbol, metadata;
                 try {
                     name = await tokenContract.methods.name().call();
                     symbol = await tokenContract.methods.symbol().call();
                     metadata = await tokenContract.methods.getMetadata().call();
-                    totalSupply = BigInt(await tokenContract.methods.totalSupply().call());
                 } catch (error) {
                     throw new Error("Failed to fetch token details: " + error.message);
                 }
-                const canMint = totalSupply < maxSupply;
                 waterfall.innerHTML = '';
                 const card = document.createElement('div');
                 card.className = 'post-card';
@@ -411,7 +405,7 @@
                         </div>
                     </div>
                     <div class="action-buttons">
-                        <button class="mint-button" data-address="${tokenAddress}" ${!accounts || !canMint ? 'disabled' : ''}>Mint</button>
+                        <button class="mint-button" data-address="${tokenAddress}" ${!accounts ? 'disabled' : ''}>Mint</button>
                     </div>
                 `;
                 waterfall.appendChild(card);
@@ -425,15 +419,7 @@
         async function updateMintButtons() {
             const buttons = document.querySelectorAll('.mint-button');
             for (const button of buttons) {
-                const tokenAddress = button.dataset.address;
-                try {
-                    const tokenContract = new web3.eth.Contract(memeTokenABI, tokenAddress);
-                    const totalSupply = BigInt(await tokenContract.methods.totalSupply().call());
-                    button.disabled = !accounts || totalSupply >= maxSupply;
-                } catch (error) {
-                    console.warn(`Failed to check totalSupply for ${tokenAddress}: ${error.message}`);
-                    button.disabled = !accounts;
-                }
+                button.disabled = !accounts;
             }
         }
 
