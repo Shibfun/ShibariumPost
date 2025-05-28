@@ -66,7 +66,7 @@
             color: #999; 
             cursor: not-allowed; 
         }
-        input { 
+        input, select { 
             width: 100%; 
             padding: 12px; 
             margin: 10px 0; 
@@ -76,7 +76,7 @@
             color: #fff; 
             font-size: 1em; 
         }
-        input::placeholder { 
+        input::placeholder, select { 
             color: #888; 
         }
         .status { 
@@ -180,6 +180,19 @@
             <button id="createToken" class="button">Create Meme Coin</button>
             <div id="createStatus" class="status"></div>
         </div>
+        <div class="section" id="setMetadataSection">
+            <h2>Set Meme Coin Metadata</h2>
+            <select id="tokenSelect">
+                <option value="">Select a Meme Coin</option>
+            </select>
+            <input type="text" id="imageUrl" placeholder="Image URL">
+            <input type="text" id="description" placeholder="Description">
+            <input type="text" id="websiteUrl" placeholder="Website URL">
+            <input type="text" id="twitterUrl" placeholder="Twitter URL">
+            <input type="text" id="telegramUrl" placeholder="Telegram URL">
+            <button id="setMetadata" class="button" disabled>Set Metadata</button>
+            <div id="metadataStatus" class="status"></div>
+        </div>
         <div class="section" id="myTokensSection">
             <h2>My Created Meme Coins</h2>
             <button id="fetchMyTokens" class="button">Fetch My Meme Coins</button>
@@ -218,8 +231,9 @@
             <ul>
                 <li><strong>Connect Your Wallet</strong>: Use MetaMask to connect to Shibarium (chain ID: 109). Ensure you have enough <span class="highlight">BONE</span> for gas fees.</li>
                 <li><strong>Create Your Meme Coin</strong>: Enter a name (e.g., “ShibaRocket”) and symbol (e.g., “SHK”). A premine of 100 trillion tokens is minted to your wallet.</li>
-                <li><strong>View Your Meme Coins</strong>: Fetch the latest 100 coins you’ve created, including addresses, names, symbols, and metadata.</li>
-                <li><strong>Explore Latest Coins</strong>: View the latest 100 meme coins created by all users on the platform.</li>
+                <li><strong>Set Metadata</strong>: Select your coin and add an image, description, website, Twitter, and Telegram links to promote it.</li>
+                <li><strong>View Your Meme Coins</strong>: Fetch the latest 100 coins you own, including addresses, names, symbols, and metadata.</li>
+                <li><strong>Explore Latest Coins</strong>: View the latest 100 meme coins created by all users.</li>
                 <li><strong>Fair & Secure</strong>: Built on Shibarium for low fees, with secure creation and metadata functions.</li>
             </ul>
         </div>
@@ -230,7 +244,7 @@
     <script src="https://cdn.jsdelivr.net/npm/web3@1.7.0/dist/web3.min.js"></script>
     <script>
         let web3, accounts, memeFactoryContract;
-        const memeFactoryAddress = "0x9491FD7AB3651904F2D5282bFa97f052698ff8b3";
+        const memeFactoryAddress = "0x9491FD7AB3651904F2D5282bFa97f05269883b3";
 
         const memeFactoryABI = [
             {
@@ -302,6 +316,13 @@
             },
             {
                 "inputs": [],
+                "name": "owner",
+                "outputs": [{"internalType": "address", "name": "", "type": "address"}],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
                 "name": "getMetadata",
                 "outputs": [
                     {"internalType": "string", "name": "", "type": "string"},
@@ -311,6 +332,19 @@
                     {"internalType": "string", "name": "", "type": "string"}
                 ],
                 "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {"internalType": "string", "name": "_imageUrl", "type": "string"},
+                    {"internalType": "string", "name": "_description", "type": "string"},
+                    {"internalType": "string", "name": "_websiteUrl", "type": "string"},
+                    {"internalType": "string", "name": "_twitterUrl", "type": "string"},
+                    {"internalType": "string", "name": "_telegramUrl", "type": "string"}
+                ],
+                "name": "setMetadata",
+                "outputs": [],
+                "stateMutability": "nonpayable",
                 "type": "function"
             }
         ];
@@ -322,11 +356,17 @@
             rpcUrl: 'https://rpc.shibariumchain.com'
         };
 
+        function updateMetadataButton() {
+            const setMetadataButton = document.getElementById('setMetadata');
+            const tokenSelect = document.getElementById('tokenSelect').value;
+            setMetadataButton.disabled = !accounts || !tokenSelect;
+        }
+
         async function connectWallet() {
             const status = document.getElementById('networkStatus');
             try {
                 if (!window.ethereum) {
-                    status.innerHTML = 'No wallet detected. Please install <a href="https://metamask.io" target="_blank">MetaMask</a>.';
+                    status.innerHTML = 'No wallet detected. Please install <a href="https://metamask.io">MetaMask</a>.';
                     throw new Error("No wallet detected");
                 }
                 status.innerText = "Connecting...";
@@ -401,10 +441,52 @@
             }
         }
 
+        async function setMetadata() {
+            const section = document.getElementById('setMetadataSection');
+            const status = document.getElementById('metadataStatus');
+            const tokenAddress = document.getElementById('tokenSelect').value;
+            const imageUrl = document.getElementById('imageUrl').value.trim();
+            const description = document.getElementById('description').value.trim();
+            const websiteUrl = document.getElementById('websiteUrl').value.trim();
+            const twitterUrl = document.getElementById('twitterUrl').value.trim();
+            const telegramUrl = document.getElementById('telegramUrl').value.trim();
+            if (!tokenAddress) return alert("Please select a meme coin!");
+            if (!accounts) return alert("Please connect your wallet first!");
+            try {
+                section.classList.add('loading');
+                status.innerText = "Setting metadata...";
+                const tokenContract = new web3.eth.Contract(memeTokenABI, tokenAddress);
+                const gasPrice = await web3.eth.getGasPrice();
+                const adjustedGasPrice = web3.utils.toBN(gasPrice).mul(web3.utils.toBN(15)).div(web3.utils.toBN(10));
+                const tx = await tokenContract.methods.setMetadata(imageUrl, description, websiteUrl, twitterUrl, telegramUrl).send({
+                    from: accounts[0],
+                    gas: '1000000',
+                    gasPrice: adjustedGasPrice
+                });
+                status.innerHTML = `Metadata set! Transaction: <a href="${shibarium.explorerUrl}/tx/${tx.transactionHash}" target="_blank">${tx.transactionHash.slice(0, 6)}...${tx.transactionHash.slice(-4)}</a>`;
+                document.getElementById('imageUrl').value = '';
+                document.getElementById('description').value = '';
+                document.getElementById('websiteUrl').value = '';
+                document.getElementById('twitterUrl').value = '';
+                document.getElementById('telegramUrl').value = '';
+                document.getElementById('tokenSelect').value = '';
+                fetchMyTokens();
+                fetchAllTokens();
+            } catch (error) {
+                console.error(error);
+                status.innerText = "Failed to set metadata: " + (error.message.includes('revert') ? error.message.split('revert')[1]?.trim() || 'Unknown reason' : error.message);
+            } finally {
+                section.classList.remove('loading');
+                updateMetadataButton();
+            }
+        }
+
         async function fetchMyTokens() {
             if (!accounts) return alert("Please connect your wallet first!");
             const section = document.getElementById('myTokensSection');
             const status = document.getElementById('tokensStatus');
+            const tokenSelect = document.getElementById('tokenSelect');
+            tokenSelect.innerHTML = '<option value="">Select a Meme Coin</option>';
             try {
                 section.classList.add('loading');
                 status.innerText = "Fetching your meme coins...";
@@ -415,17 +497,23 @@
                     status.innerText = "No meme coins created yet!";
                     return;
                 }
+                let ownedTokens = 0;
                 for (const token of tokens) {
                     const tokenContract = new web3.eth.Contract(memeTokenABI, token);
                     let name = 'Unknown';
                     let symbol = 'Unknown';
                     let metadata = ['Not set', 'Not set', 'Not set', 'Not set', 'Not set'];
+                    let owner;
                     try {
+                        owner = await tokenContract.methods.owner().call();
+                        if (owner.toLowerCase() !== accounts[0].toLowerCase()) continue;
                         name = await tokenContract.methods.name().call();
                         symbol = await tokenContract.methods.symbol().call();
                         metadata = await tokenContract.methods.getMetadata().call();
+                        ownedTokens++;
                     } catch (error) {
                         console.warn(`Failed to fetch details for token ${token}: ${error.message}`);
+                        continue;
                     }
                     const metadataStr = `
                         Image: ${metadata[0] || 'Not set'}<br>
@@ -445,13 +533,18 @@
                         <td>${metadataStr}</td>
                     `;
                     tokensBody.appendChild(row);
+                    const option = document.createElement('option');
+                    option.value = token;
+                    option.text = `${name} (${symbol})`;
+                    tokenSelect.appendChild(option);
                 }
-                status.innerText = "Meme coins loaded successfully!";
+                status.innerText = ownedTokens ? `${ownedTokens} meme coin(s) loaded!` : "No owned meme coins found!";
             } catch (error) {
                 console.error(error);
                 status.innerText = "Failed to fetch meme coins: " + error.message;
             } finally {
                 section.classList.remove('loading');
+                updateMetadataButton();
             }
         }
 
@@ -483,7 +576,7 @@
                     const metadataStr = `
                         Image: ${metadata[0] || 'Not set'}<br>
                         Description: ${metadata[1] || 'Not set'}<br>
-                        Website: ${metadata[2] || 'Not set'}<br>
+                        Website: ${metadata Colbert${metadata[2] || 'Not set'}<br>
                         Twitter: ${metadata[3] || 'Not set'}<br>
                         Telegram: ${metadata[4] || 'Not set'}
                     `;
@@ -497,12 +590,12 @@
                         <td>${symbol}</td>
                         <td>${metadataStr}</td>
                     `;
-                    tokensBody.appendChild(row);
+                    allTokensBody.appendChild(row);
                 }
-                status.innerText = "Latest meme coins loaded successfully!";
+                status.innerText = "Latest meme coins loaded!";
             } catch (error) {
                 console.error(error);
-                status.innerText = "Failed to fetch latest meme coins: " + error.message;
+                status.innerText = "Failed to fetch latest: " + error.message;
             } finally {
                 section.classList.remove('loading');
             }
@@ -519,14 +612,16 @@
 
         document.getElementById('connectButton').addEventListener('click', connectWallet);
         document.getElementById('createToken').addEventListener('click', createToken);
+        document.getElementById('setMetadata').addEventListener('click', setMetadata);
         document.getElementById('fetchMyTokens').addEventListener('click', fetchMyTokens);
         document.getElementById('fetchAllTokens').addEventListener('click', fetchAllTokens);
+        document.getElementById('tokenSelect').addEventListener('change', updateMetadataButton);
 
         window.addEventListener('load', () => {
             if (!window.location.protocol.startsWith('http')) {
-                document.getElementById('networkStatus').innerHTML = 'Please run this page via a local server (e.g., "npx serve") to connect MetaMask.';
+                document.getElementById('networkStatus').innerText = 'Please run via a local server (e.g., "npx serve").';
             } else if (!window.ethereum) {
-                document.getElementById('networkStatus').innerHTML = 'No wallet detected. Please install <a href="https://metamask.io">MetaMask</a>.';
+                document.getElementById('networkStatus').innerHTML = 'No wallet found. Install <a href="https://metamask.io">MetaMask</a>.';
             }
         });
     </script>
