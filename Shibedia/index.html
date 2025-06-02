@@ -28,6 +28,49 @@
             color: #8B4513;
             text-shadow: 0 2px 4px rgba(139, 69, 19, 0.2);
         }
+        .top-links {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .top-links a {
+            padding: 10px 20px;
+            background: linear-gradient(45deg, #FF8C00, #FFA500);
+            color: #FFF;
+            border: none;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 1em;
+        }
+        .top-links a img {
+            width: 16px;
+            height: 16px;
+            filter: sepia(50%) hue-rotate(20deg);
+        }
+        .top-links a::after {
+            content: '🐾';
+            position: absolute;
+            font-size: 1.2em;
+            opacity: 0;
+            transition: opacity 0.2s, transform 0.3s;
+            transform: translateY(20px);
+        }
+        .top-links a:hover::after {
+            opacity: 0.5;
+            transform: translateY(0);
+        }
+        .top-links a:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(255, 140, 0, 0.3);
+        }
         .connect-section {
             margin-bottom: 20px;
             text-align: center;
@@ -208,11 +251,10 @@
             border-top: 1px solid #D2B48C;
             display: flex;
             justify-content: center;
-            gap: 6px;
-            flex-wrap: wrap;
+            gap: 8px;
         }
-        .action-buttons button, .action-buttons a {
-            padding: 8px 16px;
+        .action-buttons button {
+            padding: 8px 20px;
             background: linear-gradient(45deg, #FF8C00, #FFA500);
             color: #FFF;
             border: none;
@@ -222,13 +264,8 @@
             transition: transform 0.2s, box-shadow 0.2s;
             position: relative;
             overflow: hidden;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            font-size: 0.9em;
         }
-        .action-buttons button::after, .action-buttons a::after {
+        .action-buttons button::after {
             content: '🐾';
             position: absolute;
             font-size: 1.2em;
@@ -236,7 +273,7 @@
             transition: opacity 0.2s, transform 0.3s;
             transform: translateY(20px);
         }
-        .action-buttons button:hover:not(:disabled)::after, .action-buttons a:hover::after {
+        .action-buttons button:hover:not(:disabled)::after {
             opacity: 0.5;
             transform: translateY(0);
         }
@@ -244,7 +281,7 @@
             background: #D2B48C;
             cursor: not-allowed;
         }
-        .action-buttons button:hover:not(:disabled), .action-buttons a:hover {
+        .action-buttons button:hover:not(:disabled) {
             transform: scale(1.05);
             box-shadow: 0 4px 8px rgba(255, 140, 0, 0.3);
         }
@@ -298,14 +335,26 @@
             .post-header span, .post-header h3 { font-size: 0.9em; }
             .post-content h4 { font-size: 1em; }
             .post-content p.description { font-size: 0.85em; }
-            .action-buttons { gap: 4px; }
-            .action-buttons button, .action-buttons a { padding: 6px 12px; font-size: 0.85em; }
+            .action-buttons { gap: 6px; }
+            .action-buttons button { padding: 6px 16px; font-size: 0.9em; }
+            .top-links a { padding: 8px 16px; font-size: 0.9em; }
         }
     </style>
 </head>
 <body>
     <div class="header">
         <h1>Shibedia</h1>
+    </div>
+    <div class="top-links">
+        <a href="https://shibfun.github.io/ShibariumPost/" target="_blank" title="Visit Launchpad">
+            <img src="https://img.icons8.com/ios-filled/16/000000/link.png" alt="Launchpad"> Launchpad
+        </a>
+        <a href="https://shibfun.github.io/ShibariumPost/SetInfo/" target="_blank" title="Visit Metadata">
+            <img src="https://img.icons8.com/ios-filled/16/000000/twitter.png" alt="Metadata"> Metadata
+        </a>
+        <a href="https://shibfun.github.io/ShibariumPost/Guide/" target="_blank" title="Visit Guide">
+            <img src="https://img.icons8.com/ios-filled/16/000000/telegram-app.png" alt="Guide"> Guide
+        </a>
     </div>
     <div class="connect-section">
         <button id="connectWalletButton">Connect Wallet</button>
@@ -467,15 +516,6 @@
                         <div class="action-buttons">
                             <button class="mint-button" data-address="${token}" ${!accounts ? 'disabled' : ''}>Mint</button>
                             <button class="copy-contract-button" data-address="${token}" title="Copy Contract Address">Copy Contract<span class="tooltip">Copied!</span></button>
-                            <a href="https://www.shibariumscan.io/token/${token}" target="_blank" title="View Token on ShibariumScan">
-                                <img src="https://img.icons8.com/ios-filled/16/000000/coin.png" alt="Token"> Token
-                            </a>
-                            <a href="https://www.shibariumscan.io/token/${token}?tab=txs" target="_blank" title="View Transactions on ShibariumScan">
-                                <img src="https://img.icons8.com/ios-filled/16/000000/transaction.png" alt="Txs"> Txs
-                            </a>
-                            <a href="https://www.shibariumscan.io/token/${token}?tab=holders" target="_blank" title="View Holders on ShibariumScan">
-                                <img src="https://img.icons8.com/ios-filled/16/000000/group.png" alt="Holders"> Holders
-                            </a>
                         </div>
                     `;
                     waterfall.appendChild(card);
@@ -562,15 +602,6 @@
                     <div class="action-buttons">
                         <button class="mint-button" data-address="${tokenAddress}" ${!accounts ? 'disabled' : ''}>Mint</button>
                         <button class="copy-contract-button" data-address="${tokenAddress}" title="Copy Contract Address">Copy Contract<span class="tooltip">Copied!</span></button>
-                        <a href="https://www.shibariumscan.io/token/${tokenAddress}" target="_blank" title="View Token on ShibariumScan">
-                            <img src="https://img.icons8.com/ios-filled/16/000000/coin.png" alt="Token"> Token
-                        </a>
-                        <a href="https://www.shibariumscan.io/token/${tokenAddress}?tab=txs" target="_blank" title="View Transactions on ShibariumScan">
-                            <img src="https://img.icons8.com/ios-filled/16/000000/transaction.png" alt="Txs"> Txs
-                        </a>
-                        <a href="https://www.shibariumscan.io/token/${tokenAddress}?tab=holders" target="_blank" title="View Holders on ShibariumScan">
-                            <img src="https://img.icons8.com/ios-filled/16/000000/group.png" alt="Holders"> Holders
-                        </a>
                     </div>
                 `;
                 waterfall.appendChild(card);
