@@ -25,7 +25,7 @@
         .header h1 {
             font-size: clamp(1.8em, 5vw, 2.5em);
             font-weight: 700;
-            color: #8B4513; /* 柴犬棕 */
+            color: #8B4513;
             text-shadow: 0 2px 4px rgba(139, 69, 19, 0.2);
         }
         .connect-section {
@@ -97,6 +97,8 @@
             overflow: hidden;
             box-shadow: 0 6px 20px rgba(139, 69, 19, 0.1);
             animation: fadeIn 0.5s ease-in;
+            display: flex;
+            flex-direction: column;
         }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(15px); }
@@ -165,7 +167,8 @@
             transition: opacity 0.3s;
         }
         .post-content {
-            padding: 10px;
+            padding: 12px;
+            flex-grow: 1;
         }
         .post-content h4 {
             font-size: 1.1em;
@@ -176,11 +179,8 @@
         .post-content p.description {
             font-size: 0.9em;
             color: #4A2C0B;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
             line-height: 1.5;
-            max-height: 54px;
-            overflow: hidden;
-            text-overflow: ellipsis;
         }
         .post-content .info {
             font-size: 0.85em;
@@ -208,10 +208,11 @@
             border-top: 1px solid #D2B48C;
             display: flex;
             justify-content: center;
-            gap: 8px;
+            gap: 6px;
+            flex-wrap: wrap;
         }
-        .action-buttons button {
-            padding: 8px 20px;
+        .action-buttons button, .action-buttons a {
+            padding: 8px 16px;
             background: linear-gradient(45deg, #FF8C00, #FFA500);
             color: #FFF;
             border: none;
@@ -221,8 +222,13 @@
             transition: transform 0.2s, box-shadow 0.2s;
             position: relative;
             overflow: hidden;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.9em;
         }
-        .action-buttons button::after {
+        .action-buttons button::after, .action-buttons a::after {
             content: '🐾';
             position: absolute;
             font-size: 1.2em;
@@ -230,7 +236,7 @@
             transition: opacity 0.2s, transform 0.3s;
             transform: translateY(20px);
         }
-        .action-buttons button:hover:not(:disabled)::after {
+        .action-buttons button:hover:not(:disabled)::after, .action-buttons a:hover::after {
             opacity: 0.5;
             transform: translateY(0);
         }
@@ -238,7 +244,7 @@
             background: #D2B48C;
             cursor: not-allowed;
         }
-        .action-buttons button:hover:not(:disabled) {
+        .action-buttons button:hover:not(:disabled), .action-buttons a:hover {
             transform: scale(1.05);
             box-shadow: 0 4px 8px rgba(255, 140, 0, 0.3);
         }
@@ -291,9 +297,9 @@
             .waterfall { grid-template-columns: repeat(2, 1fr); gap: 10px; }
             .post-header span, .post-header h3 { font-size: 0.9em; }
             .post-content h4 { font-size: 1em; }
-            .post-content p.description { font-size: 0.85em; max-height: 50px; }
-            .action-buttons { flex-direction: row; gap: 6px; }
-            .action-buttons button { padding: 6px 16px; font-size: 0.9em; }
+            .post-content p.description { font-size: 0.85em; }
+            .action-buttons { gap: 4px; }
+            .action-buttons button, .action-buttons a { padding: 6px 12px; font-size: 0.85em; }
         }
     </style>
 </head>
@@ -461,6 +467,15 @@
                         <div class="action-buttons">
                             <button class="mint-button" data-address="${token}" ${!accounts ? 'disabled' : ''}>Mint</button>
                             <button class="copy-contract-button" data-address="${token}" title="Copy Contract Address">Copy Contract<span class="tooltip">Copied!</span></button>
+                            <a href="https://www.shibariumscan.io/token/${token}" target="_blank" title="View Token on ShibariumScan">
+                                <img src="https://img.icons8.com/ios-filled/16/000000/coin.png" alt="Token"> Token
+                            </a>
+                            <a href="https://www.shibariumscan.io/token/${token}?tab=txs" target="_blank" title="View Transactions on ShibariumScan">
+                                <img src="https://img.icons8.com/ios-filled/16/000000/transaction.png" alt="Txs"> Txs
+                            </a>
+                            <a href="https://www.shibariumscan.io/token/${token}?tab=holders" target="_blank" title="View Holders on ShibariumScan">
+                                <img src="https://img.icons8.com/ios-filled/16/000000/group.png" alt="Holders"> Holders
+                            </a>
                         </div>
                     `;
                     waterfall.appendChild(card);
@@ -547,6 +562,15 @@
                     <div class="action-buttons">
                         <button class="mint-button" data-address="${tokenAddress}" ${!accounts ? 'disabled' : ''}>Mint</button>
                         <button class="copy-contract-button" data-address="${tokenAddress}" title="Copy Contract Address">Copy Contract<span class="tooltip">Copied!</span></button>
+                        <a href="https://www.shibariumscan.io/token/${tokenAddress}" target="_blank" title="View Token on ShibariumScan">
+                            <img src="https://img.icons8.com/ios-filled/16/000000/coin.png" alt="Token"> Token
+                        </a>
+                        <a href="https://www.shibariumscan.io/token/${tokenAddress}?tab=txs" target="_blank" title="View Transactions on ShibariumScan">
+                            <img src="https://img.icons8.com/ios-filled/16/000000/transaction.png" alt="Txs"> Txs
+                        </a>
+                        <a href="https://www.shibariumscan.io/token/${tokenAddress}?tab=holders" target="_blank" title="View Holders on ShibariumScan">
+                            <img src="https://img.icons8.com/ios-filled/16/000000/group.png" alt="Holders"> Holders
+                        </a>
                     </div>
                 `;
                 waterfall.appendChild(card);
